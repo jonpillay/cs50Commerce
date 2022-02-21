@@ -1,0 +1,91 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% load tz %}
+
+{% block body %}
+    <div class="w3-container" style="border-style: dotted; min-width: 1540px;">
+    <h2 style="display: inline-block;">Active Listings</h2>
+    {% if message %}
+        <h3 style="display: inline; float: right; margin-right: 10%;">{{ message }}!!!</h3>
+    {% endif %}
+    <ul style="list-style: none; margin-left: -1%;">
+    {% for item in items %}
+        {% if item.is_active %}
+        <li>
+            <div style="display: grid; grid-template-columns: 18% 57% 25%; height: 300px;" id="listing">
+                <div style="border-style: dotted;">
+                    <img style="max-height: 298px; margin-right: 3px;" src="{{item.img.url}}" alt="You Fucked Up">
+                </div>
+                <div style="display: grid; grid-template-rows: 20% 60% 20%;">
+                    <div style="border-style: dotted; background-color: lawngreen;">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <h3 class="nav-link">For Sale: <a href="{% url 'item' item.id %}">{{item.name}}</a></h3>
+                            </li>    
+                            <li class="nav-item">
+                                <h3 class="nav-link">Seller: <a href="{% url 'profile' item.seller.id %}"> {{item.seller.username}}</a></h3>
+                            </li>
+                            <li class="nav-item" style="margin-left: auto;">
+                                <a class="nav-link">
+                                    {% if item.auctionStart >= now %}<h3>Going Live on {{item.auctionStart|localtime}}</h3>
+                                    {% elif now > item.auctionEnd %}<h3>Auction Ended on {{item.auctionEnd}}</h3>
+                                    {% else %}<h3>ACTIVE! {{item.auctionEnd}}</h3>{% endif %}
+                                </a>      
+                            </li>
+                        </ul>
+                    </div>
+                    <div style="border-style: dotted; background-color: lightcoral;">
+                        <h5>{{item.description}}</h5>
+                    </div>
+                    <div style="background-color: blue;">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link"><h3>{% if item.highestBid %} Current Winner: {{item.highestBid.bidder.username}} With £{{item.highestBid.bid }} {% else %}Starting Bid {{item.startingBid}} {% endif %}</h3></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="border-style: dotted; display: grid; grid-template-rows: 20% 55% 25%; background-color: crimson;">
+                    <div style="border-style: dotted;">
+                        <h3>Last 5 Shots!</h3>
+                    </div>
+                    <div style="border-style: dotted;">
+                        {% if item.is_active %}
+                        <ul style="list-style: none; margin-left: -5%;">
+                            {% for bid in item.get_last_6 %}
+                                <li><h6>£{{bid.bid}} From: {{bid.bidder.username}} on {{bid.bidPlaced|date:"d M Y G i"}}</h6></li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    <div style="border-style: dotted; position: relative;">
+                        {% if request.user == item.seller and item.is_active %}
+                            <h3>No bid rigging!</h3>
+                            <form action="{% url 'close_item' item.id %}" method="post">
+                                {%csrf_token%}
+                                <button type="submit" style="position: absolute; top: 30%; left: 75%;">Close {{item.name}}</button>
+                            </form>
+                        {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
+                            <h3>You are the winner {{item.highestBid.bidder}}</h3>
+                        {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
+                            <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
+                        {% elif not item.seller == request.user and item.is_active %}
+                            <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'new_bid' item.id %}" method="post">
+                                {% csrf_token %}
+                                {{ bidForm }}
+                                <input type="submit" value="Submit">
+                            </form>
+                            <form action="{% url 'watch' item.id %}" method="post">
+                                {%csrf_token%}
+                                <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>    
+        </li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+    </div>
+{% endblock %}

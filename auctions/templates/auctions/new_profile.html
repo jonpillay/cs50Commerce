@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% load tz %}
+
+{% block body %}
+
+<h2>Create Your Profile</h2>
+
+<form action="{% url 'create_profile' request.user.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ profile_form.as_p }}
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock %}

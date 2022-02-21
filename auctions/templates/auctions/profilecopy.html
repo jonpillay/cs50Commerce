@@ -1,0 +1,87 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% load tz %}
+
+{% block body %}
+<container class="w3-container" style="display: grid; grid-template-rows: auto auto; border-style: dotted; width: 80%; height: auto; margin:auto; min-width: 1540px;">
+    <div style="display: grid; grid-template-columns: 20% 80%;">
+        <div style="max-height: 400px; max-width: 400px; object-fit: contain; width: 100%; height: 100%; border-style: dotted;">
+            <img src="{{profile.profile_pic.url}}" style="clip-path: circle(); max-height: 100%; max-width: 100%;" alt="No Profile Pic">
+        </div>
+        <div style="border-style: dotted;">
+            <h1>{{profile.first}} {{profile.lasts}}</h1>
+            <br>
+            <h5>Last Known Timezone = </h5>
+        </div>
+    </div>
+    <div style="background-color: red;">
+        <div style="padding: 10px;">
+            <h2>About Me!</h2>
+            <h4 style="margin: 20px;">{{profile.description}}</h4>
+        </div>
+    </div>
+</container>
+<container class="w3-container" style="display: grid; grid-template-columns: 50% 50%; border-style: dotted; width: 80%; height: fit-content; margin:auto; min-width: 1540px;">
+    <div style="border: dotted;">
+        <h1 style="padding: 10px;">{{profile.first}}'s Listings</h1>
+        <ul style="list-style: none;">
+            {% for item in profile.owner.saleItems.all %}
+                <li>
+                    <div style="display: grid; grid-template-rows: 15% 85%; border: dotted; height: 200px; width: 90%; margin: auto -1%;">
+                        <div>
+                            <ul class="nav">
+                                <li>
+                                    <a href="{% url 'item' item.id %}"><h4>{{item.name}}</h4></a>
+                                </li>
+                                <li>
+                                    <a class="nav-link">
+                                        {% if item.auctionStart >= now %}<h6>Going Live on {{item.auctionStart|localtime}}</h6>
+                                        {% elif now > item.auctionEnd %}<h6>Auction Ended on {{item.auctionEnd}}</h6>
+                                        {% else %}<h6>ACTIVE!</h6>{% endif %}
+                                    </a>
+                                </li>    
+                            </ul> 
+                        </div>
+                        <div style="display: grid; grid-template-columns: 25% 75%;">
+                            <div>
+                                <img src="{{item.img.url}}" style="max-width: 100%">
+                            </div>
+                            <div>
+                                {{item.description}}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor%}
+        </ul>
+    </div>
+    <div>
+        <h1 style="padding: 10px;">This is for Seller Reviews</h1>
+        <div style="padding: 10px;">
+            <h3>Leave Review for {{profile.first}} {{profile.lasts}}</h3>
+            <form action="{% url 'new_profile_comment' profile_id=profile.id %}" method="post" style="width: 100%; padding: 12px 20px; margin: 8px 0; box-sizing: border-box;">
+                {%csrf_token%}
+                {{commentForm.as_p}}
+                <input type="submit">
+            </form>
+        </div>
+            <ul style="list-style: none;">
+            {% for comment in profile.profileComments.all %}
+            <li>
+                <div style="display: grid; grid-template-rows: 25% 75%; border: dotted; height: 200px; width: 90%; margin: auto -1%;">
+                    <div style="padding-top: 3px;">
+                        <img src="{{comment.commentter.profile.profile_pic.url}}" style="display: inline; clip-path: circle(); max-height: 100%; max-width: 100%;" alt="No Profile Pic">
+                        <h5 style="display: inline;">{{comment.commentter.username}} left a review:</h5>
+                    </div>
+                    <div style="padding-left: 20px; padding-top: 5px;">
+                        {{comment.comment}}
+                    </div>
+                </div>
+            </li>        
+            {% endfor %}
+            </ul>
+    </div>
+</container>
+
+
+{% endblock%}

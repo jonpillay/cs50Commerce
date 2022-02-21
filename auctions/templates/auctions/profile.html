@@ -1,0 +1,130 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% load tz %}
+
+{% block body %}
+<container class="w3-container" style="display: grid; grid-template-rows: auto auto; border-style: dotted; width: 80%; height: auto; margin:auto; min-width: 1540px;">
+    <div style="display: grid; grid-template-columns: 20% 80%;">
+        <div style="max-height: 500px; max-width: 500px; border-style: dotted;">
+            <img src="{{profile.profile_pic.url}}" style="clip-path: circle(); max-height: 100%; max-width: 100%;" alt="No Profile Pic">
+        </div>
+        <div style="border-style: dotted;">
+            <h1>{{profile.first}} {{profile.lasts}}</h1>
+            <br>
+            <h5>Last Known Timezone = </h5>
+        </div>
+    </div>
+    <div style="background-color: red;">
+        <div style="padding: 10px;">
+            <h2>About Me!</h2>
+            <h4 style="margin: 20px;">{{profile.description}}</h4>
+        </div>
+    </div>
+</container>
+<div style="border: dotted; border-color: deeppink; width: 80%; min-width: 1500px; margin: auto;">
+    <h1 style="padding: 10px;">{{profile.first}}'s Listings</h1>
+    <ul style="list-style-type: none; padding: 0px;">
+        {% for item in profile.owner.saleItems.all %}
+        <li>
+            <div style="display: grid; grid-template-columns: 18% 57% 25%; height: 300px;" id="listing">
+                <div style="border-style: dotted;">
+                    <img style="max-width: 300px; margin: auto;" src="{{item.img.url}}" alt="You Fucked Up">
+                </div>
+                <div style="display: grid; grid-template-rows: 20% 60% 20%;">
+                    <div style="border-style: dotted; background-color: lawngreen;">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <h3 class="nav-link">For Sale: <a href="{% url 'item' item.id %}">{{item.name}}</a></h3>
+                            </li>    
+                            <li class="nav-item">
+                                <h3 class="nav-link">Seller: <a href="{% url 'profile' item.seller.id %}"> {{item.seller.username}}</a></h3>
+                            </li>
+                            <li class="nav-item" style="margin-left: auto;">
+                                <a class="nav-link">
+                                    {% if item.auctionStart >= now %}<h3>Going Live on {{item.auctionStart|localtime}}</h3>
+                                    {% elif now > item.auctionEnd %}<h3>Auction Ended on {{item.auctionEnd}}</h3>
+                                    {% else %}<h3>ACTIVE! {{item.auctionEnd}}</h3>{% endif %}
+                                </a>      
+                            </li>
+                        </ul>
+                    </div>
+                    <div style="border-style: dotted; background-color: lightcoral;">
+                        <h5>{{item.description}}</h5>
+                    </div>
+                    <div style="background-color: blue;">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link"><h3>{% if item.highestBid %} Current Winner: {{item.highestBid.bidder.username}} With £{{item.highestBid.bid }} {% else %}Starting Bid {{item.startingBid}} {% endif %}</h3></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="border-style: dotted; display: grid; grid-template-rows: 20% 55% 25%; background-color: crimson;">
+                    <div style="border-style: dotted;">
+                        <h3>Last 5 Shots!</h3>
+                    </div>
+                    <div style="border-style: dotted;">
+                        <ul style="list-style: none; margin-left: -5%;">
+                            {% for bid in item.get_last_6 %}
+                                <li><h6>£{{bid.bid}} From: {{bid.bidder.username}} on {{bid.bidPlaced|date:"d M Y G i"}}</h6></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div style="border-style: dotted; position: relative;">
+                        {% if request.user == item.seller and item.is_active %}
+                            <h3>No bid rigging!</h3>
+                            <form action="{% url 'close_item' item.id %}" method="post">
+                                {%csrf_token%}
+                                <button type="submit" style="position: absolute; top: 30%; left: 70%;">Close {{item.name}}</button>
+                            </form>
+                        {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
+                            <h3>You are the winner {{item.highestBid.bidder}}</h3>
+                        {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
+                            <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
+                        {% elif not item.seller == request.user and item.is_active %}
+                            <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'new_bid' item.id %}" method="post">
+                                {% csrf_token %}
+                                {{ bidForm }}
+                                <input type="submit" value="Submit">
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>    
+        </li>
+        {% endfor%}
+    </ul>
+</div>
+<div style="border: dotted; border-color: blue; width: 80%; min-width: 1500px; margin: auto; display: grid; grid-template-columns: 65% 35%;">
+    <div>
+        <h1 style="padding: 10px;">Seller Reviews</h1>
+        <ul style="list-style: none;">
+        {% for comment in profile.profileComments.all %}
+        <li>
+            <div style="display: grid; grid-template-rows: 25% 75%; border: dotted; height: 200px; width: 90%; margin: auto -1%;">
+                <div style="padding-top: 3px;">
+                    <img src="{{comment.commentter.profile.profile_pic.url}}" style="display: inline; clip-path: circle(); max-height: 100%; max-width: 100%;" alt="No Profile Pic">
+                    <h5 style="display: inline;">{{comment.commentter.username}} left a review:</h5>
+                </div>
+                <div style="padding-left: 20px; padding-top: 5px;">
+                    {{comment.comment}}
+                </div>
+            </div>
+        </li>        
+        {% endfor %}
+        </ul>
+    </div>
+    <div>
+        <div style="padding: 10px;">
+            <h3>Leave Review for {{profile.first}} {{profile.lasts}}</h3>
+            <form action="{% url 'new_profile_comment' profile_id=profile.id %}" method="post" style="width: 100%; padding: 12px 20px; margin: 8px 0; box-sizing: border-box;">
+                {%csrf_token%}
+                {{commentForm.as_p}}
+                <input type="submit">
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock%}
