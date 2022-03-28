@@ -280,7 +280,8 @@ def item_page(request, item_id):
         "item": item,
         "commentForm": CommentForm,
         "bidForm": NewBidForm,
-        "now": now
+        "now": now,
+        "end": item.auctionEnd.timestamp()
     })
 
 def close_item(request, item_id):
@@ -311,7 +312,7 @@ def watchlist(request):
     profile = request.user.profile
     watchlist = profile.watchlist.all()
     if watchlist == None:
-        message = ""
+        message = "Not Watching Anything"
     return render(request, "auctions/watchlist.html", {
         "watchlist": watchlist,
         "now": now,

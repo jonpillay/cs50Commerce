@@ -6,7 +6,9 @@
 
 <div class="w3-container" style="display: grid; grid-template-rows: 15% 85%; border-style: dotted; width: 80%; height: 450px; margin:auto; min-width: 1540px;" id="listing">
     <div style="border-style: dotted; width: 100%; height:auto">
-        <h1>{{item.name}} for sale from <a href="{% url 'profile' item.seller.id %}">{{item.seller.username}}</a><span style="float: right;">Ends: {{item.auctionEnd}}</span></h1>
+        <h1>{{item.name}} for sale from <a href="{% url 'profile' item.seller.id %}">{{item.seller.username}}</a><span style="float: right;">{% if item.auctionStart >= now %}<h3>Going Live on {{item.auctionStart|localtime}}</h3>
+            {% elif now > item.auctionEnd %}<h3>Auction Ended on {{item.auctionEnd|localtime}}</h3>
+            {% else %}<div class="counter" style="font-weight: 750; font-size: 85%; text-align: justify; color: blue;" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}</span></h1>
     </div>
     <div style="display: grid; grid-template-columns: 25% 50% 25%; border-style: dotted;">
         <div>
@@ -69,6 +71,7 @@
                 {{commentForm.as_p}}
                 <input type="submit">
             </form>
+            <div class="counter" data-enddate="{{item.auctionEnd.isoformat}}"></div>
         </div>
     </div>
 </div>

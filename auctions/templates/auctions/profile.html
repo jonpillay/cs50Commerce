@@ -43,7 +43,7 @@
                                 <a class="nav-link">
                                     {% if item.auctionStart >= now %}<h3>Going Live on {{item.auctionStart|localtime}}</h3>
                                     {% elif now > item.auctionEnd %}<h3>Auction Ended on {{item.auctionEnd}}</h3>
-                                    {% else %}<h3>ACTIVE! {{item.auctionEnd}}</h3>{% endif %}
+                                    {% else %}<h3 class="counter" style="font-weight: 800; font-size: 80%; text-align: justify;" data-enddate="{{item.auctionEnd.isoformat}}"></h3>{% endif %}
                                 </a>      
                             </li>
                         </ul>
