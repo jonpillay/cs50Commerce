@@ -11,6 +11,7 @@ import pytz
 from django.db.models.query_utils import DeferredAttribute
 
 from django.utils import timezone
+import time
 
 class User(AbstractUser):
     pass
@@ -39,6 +40,16 @@ class ItemListing(models.Model):
     def get_last_6(self):
         bids = Bid.objects.filter(bidItem=self).order_by('-bidPlaced')[:6:-1]
         return bids
+
+    def get_remain(self):
+        now = time.time()
+        print("This RAN")
+        print(now)
+        end_time = self.auctionEnd
+        time_left = (end_time.timestamp())
+        print(time_left)
+        milliseconds_left = time_left - now
+        return round(milliseconds_left/1000)
 
     """DEFUNCT"""
 
