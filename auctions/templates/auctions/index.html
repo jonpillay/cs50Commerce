@@ -75,10 +75,13 @@
                                 {{ bidForm }}
                                 <input type="submit" value="Submit">
                             </form>
-                            <form action="{% url 'watch' item.id %}" method="post">
-                                {%csrf_token%}
-                                <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
-                            </form>
+                            {% if user.profile and item.is_unwatched %}
+                                <form action="{% url 'watch' item.id %}" method="post">
+                                    {%csrf_token%}
+                                    <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
+                                </form>
+                            {% else %}
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>

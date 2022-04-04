@@ -1,6 +1,7 @@
 from email.policy import default
 from pyexpat import model
 from tkinter import CASCADE
+from urllib import request
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django import forms
@@ -50,6 +51,21 @@ class ItemListing(models.Model):
         print(time_left)
         milliseconds_left = time_left - now
         return round(milliseconds_left/1000)
+
+    def is_unwatched(self):
+        print("Made it here at least")
+        list = request.user.profile.watchlist
+        if len(list)>0:
+            print("There is list")
+        else:
+            print("no list")
+        print(list)
+        if self.id in list:
+            print("We False Here")
+            return False
+        else:
+            print("We True Here")
+            return True
 
     """DEFUNCT"""
 

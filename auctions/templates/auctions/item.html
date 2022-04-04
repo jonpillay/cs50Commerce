@@ -17,31 +17,32 @@
         <div style="background-color: lawngreen;">
             <h4>{{item.description}}</h4>
         </div>
-
-            <div style="border-style: dotted; display: grid; grid-template-rows: 75% 25%; background-color: crimson;">
-                <div style="border-style: dotted;">
-                    <ul style="list-style: none; margin-left: -5%;">
-                        {% for bid in item.get_last_6 %}
-                            <li><h6>£{{bid.bid}} From: {{bid.bidder.username}} on {{bid.bidPlaced|date:"d M Y G i"}}</h6></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div style="border-style: dotted;">
-                {% if request.user == item.seller and item.is_active %}
-                    <h3>No bid rigging, {{request.user}}</h3>
-                {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
-                    <h3>You are the winner {{item.highestBid.bidder}}</h3>
-                {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
-                    <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
-                {% elif not item.seller == request.user and item.is_active %}
-                    <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'new_bid' item.id %}" method="post">
-                        {% csrf_token %}
-                        {{ bidForm }}
-                        <input type="submit" value="Submit">
-                    </form>
-                {% endif %}
-                </div>
+        <div style="border-style: dotted; display: grid; grid-template-rows: 75% 25%; background-color: crimson;">
+            <div style="border-style: dotted;">
+                <ul style="list-style: none; margin-left: -5%;">
+                    {% for bid in item.get_last_6 %}
+                        <li><h6>£{{bid.bid}} From: {{bid.bidder.username}} on {{bid.bidPlaced|date:"d M Y G i"}}</h6></li>
+                    {% endfor %}
+                </ul>
             </div>
+            <div style="border-style: dotted;">
+            {% if request.user == item.seller and item.is_active %}
+                <h3>No bid rigging, {{request.user}}</h3>
+            {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
+                <h3>You are the winner {{item.highestBid.bidder}}</h3>
+            {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
+                <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
+            {% elif not item.seller == request.user and item.is_active %}
+            <div>
+                <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'new_bid' item.id %}" method="post">
+                    {% csrf_token %}
+                    {{ bidForm }}
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+            {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 <div style="border: dotted; border-color: blue; width: 80%; min-width: 1500px; margin: auto; display: grid; grid-template-columns: 65% 35%;">
