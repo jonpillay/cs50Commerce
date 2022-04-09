@@ -5,11 +5,17 @@ document.addEventListener('DOMContentLoaded', () => {
         set.forEach(function(item) {
             var endDate = Date.parse(item.dataset.enddate);
             var millisec_left = endDate - Date.now();
-            var days = Math.floor(millisec_left / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((millisec_left % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((millisec_left % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((millisec_left % (1000 * 60)) / 1000);
-            item.innerHTML = days + " Days " + hours + " Hours " + minutes + " Minutes " + seconds + " Seconds";
+            console.log(millisec_left)
+            if (millisec_left < 1000) {
+                item.innerHTML = "Auction Finished"
+            }
+            else {
+                var days = Math.floor(millisec_left / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((millisec_left % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((millisec_left % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((millisec_left % (1000 * 60)) / 1000);
+                item.innerHTML = days + " Days " + hours + " Hours " + minutes + " Minutes " + seconds + " Seconds";
+            }
         });
     }
 

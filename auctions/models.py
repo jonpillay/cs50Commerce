@@ -23,8 +23,7 @@ class ItemListing(models.Model):
     name = models.CharField(max_length=64)
     img = models.ImageField(upload_to ='images/')
     description = models.CharField(max_length=10000)
-    itemListedOn = models.DateTimeField(default=datetime.datetime.utcnow)
-    auctionStart = models.DateTimeField(default=datetime.datetime.utcnow)
+    auctionStart = models.DateTimeField(blank=True, default=datetime.datetime.utcnow)
     auctionEnd = models.DateTimeField(null=True, blank=True)
     startingBid = models.DecimalField(null=True, blank=True, max_digits=128, decimal_places=2)
     """bids = models.ForeignKey('Bid', on_delete=models.DO_NOTHING, related_name="item")"""
@@ -32,11 +31,26 @@ class ItemListing(models.Model):
 
     def is_active(self):
         now = datetime.datetime.now(timezone.utc).replace(microsecond=0)
-        if self.auctionStart < now < self.auctionEnd:
+        hour = datetime.timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=1, weeks=0)
+        if self.auctionStart < now  < self.auctionEnd:
             return True
         else:
             self.close_item_check
             return False
+
+    def going_live(self):
+        now = datetime.datetime.now(timezone.utc).replace(microsecond=0)
+        if self.auctionStart > now:
+            return True
+        else:
+            return False
+
+    def has_ended(self):
+        now = datetime.datetime.now(timezone.utc).replace(microsecond=0)
+        if now > self.auctionEnd:
+            return True
+        else:
+            return False        
 
     def get_last_6(self):
         bids = Bid.objects.filter(bidItem=self).order_by('-bidPlaced')[:6:-1]
@@ -54,18 +68,31 @@ class ItemListing(models.Model):
 
     def is_unwatched(self):
         print("Made it here at least")
-        list = request.user.profile.watchlist
-        if len(list)>0:
+        list = []
+        if len(list) == 0:
             print("There is list")
+            print(list)
         else:
             print("no list")
-        print(list)
-        if self.id in list:
+            print(list)
+        if self in list:
             print("We False Here")
             return False
         else:
             print("We True Here")
             return True
+
+    def unwatched(self):
+        list=self.watching.all()
+        current_user = request.user
+        print(current_user)
+        print("hello")
+        print(j)
+        for i in list:
+            if i == request.User.profile:
+                return False
+            else:
+                return True
 
     """DEFUNCT"""
 
@@ -81,7 +108,7 @@ class Bid(models.Model):
     bid = models.DecimalField(max_digits=128, decimal_places=2)
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
     bidItem = models.ForeignKey(ItemListing, related_name="bids", on_delete=models.CASCADE)
-    bidPlaced = models.DateTimeField(default=datetime.datetime.utcnow)
+    bidPlaced = models.DateTimeField(default=datetime.datetime.now(datetime.timezone.utc))
 
     """def highest_bid(self):
         highest = None

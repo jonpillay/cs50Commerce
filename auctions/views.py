@@ -19,13 +19,37 @@ from .models import *
 from .models import User
 from .utils import *
 
+class SearchForm(forms.Form):
+    search = forms.CharField()
 
 def index(request):
+    if request.method == 'POST':
+        search = SearchForm(request.POST)
+        if search.is_valid():
+            word = search.cleaned_data['search'].lower()
+            filenames = ItemListing.objects.all()
+            for i in filenames:
+                if word == i.name.lower():
+                    return redirect("item", item_id=i.id)
+                elif word in i.name.lower():
+                    matches=[]
+                    for q in filenames:
+                            if word in q.name.lower():
+                                matches.append(q)
+                    return render(request, "auctions/partial-result.html", {
+                            "word": word.capitalize(),
+                            "matches": matches
+                    })
+            else:               
+                return render(request, "auctions/not-found.html", {
+                        "word": word.capitalize(),
+                })
     now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
     return render(request, "auctions/index.html", {
         "items": ItemListing.objects.all(),
         "now": now,
         "bidForm": NewBidForm,
+        "searchform": SearchForm
     })
 
 
@@ -171,6 +195,12 @@ class NewListingForm (forms.Form):
     auctionStart = forms.DateTimeField(label="Auction Start", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
     auctionEnd = forms.DateTimeField(label="Auction End", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
 
+    def auctionStart(self, *arg, **kwarg):
+        now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+        auctionStart = self.cleaned_data.get("auctionStart")
+        if now > auctionStart:
+            raise forms.ValidationError("Start cannot be in the Past!")
+
 def new_listing(request):
     if request.method == "POST":
         if not request.user.is_authenticated:
@@ -304,6 +334,16 @@ def watch(request, item_id):
         item = ItemListing.objects.get(pk=item_id)
         profile = Profile.objects.get(pk=int(request.user.id))
         profile.watchlist.add(item)
+        print("Success!!!")
+        return HttpResponseRedirect(reverse('index'))
+
+def unwatch(request, item_id):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            raise Http404
+        item = ItemListing.objects.get(pk=item_id)
+        profile = Profile.objects.get(pk=int(request.user.id))
+        profile.watchlist.remove(item)
         print("Success!!!")
         return HttpResponseRedirect(reverse('index'))
 

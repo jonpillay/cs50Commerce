@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Auctions
+{% endblock %}
+
+{% block body %}
+    <h1>{{word}} did not return any exact results. But here are some partial ones:</h1>
+
+    <ul>
+        {% for match in matches %}
+            <li><a href="{% url 'item' item_id=match.id %}">{{match.name}}</a></li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

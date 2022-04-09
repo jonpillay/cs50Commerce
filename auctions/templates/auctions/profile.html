@@ -35,15 +35,12 @@
                         <ul class="nav">
                             <li class="nav-item">
                                 <h3 class="nav-link">For Sale: <a href="{% url 'item' item.id %}">{{item.name}}</a></h3>
-                            </li>    
-                            <li class="nav-item">
-                                <h3 class="nav-link">Seller: <a href="{% url 'profile' item.seller.id %}"> {{item.seller.username}}</a></h3>
                             </li>
                             <li class="nav-item" style="margin-left: auto;">
                                 <a class="nav-link">
-                                    {% if item.auctionStart >= now %}<h3>Going Live on {{item.auctionStart|localtime}}</h3>
-                                    {% elif now > item.auctionEnd %}<h3>Auction Ended on {{item.auctionEnd}}</h3>
-                                    {% else %}<h3 class="counter" style="font-weight: 800; font-size: 80%; text-align: justify;" data-enddate="{{item.auctionEnd.isoformat}}"></h3>{% endif %}
+                                    {% if item.going_live %}<h3>Starts: {{item.auctionStart|localtime}}</h3>
+                                    {% elif item.has_ended %}<h3>Auction Ended on {{item.auctionEnd|localtime}}</h3>
+                                    {% else %}<div class="counter" style="font-weight: 800; font-size: 100%; text-align: justify; color: blue;" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}
                                 </a>      
                             </li>
                         </ul>
