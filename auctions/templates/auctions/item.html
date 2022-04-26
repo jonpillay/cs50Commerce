@@ -36,6 +36,7 @@
             <div>
                 <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'new_bid' item.id %}" method="post">
                     {% csrf_token %}
+                    <input type="hidden" value="{{item.id}}" name="id">
                     {{ bidForm }}
                     <input type="submit" value="Submit">
                 </form>

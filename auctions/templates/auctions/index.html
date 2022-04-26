@@ -70,11 +70,21 @@
                         {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
                             <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
                         {% elif not item.seller == request.user and item.is_active %}
-                            <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'new_bid' item.id %}" method="post">
+                            {% if item.id == errorID %}
+                            <form action="{% url 'new_bid' item.id %}" method="post">
                                 {% csrf_token %}
+                                <input type="hidden" value="{{item.id}}" name="id">
+                                {{ errorForm }}
+                                <input type="submit" value="Submit">
+                            </form>
+                            {% else %}
+                            <form action="{% url 'new_bid' item.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{item.id}}" name="id">
                                 {{ bidForm }}
                                 <input type="submit" value="Submit">
                             </form>
+                            {% endif %}
                             {% if user.profile and request.user.profile not in item.watching.all %}
                                 <form action="{% url 'watch' item.id %}" method="post">
                                     {%csrf_token%}

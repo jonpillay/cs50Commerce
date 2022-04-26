@@ -14,6 +14,7 @@ from django.db.models.query_utils import DeferredAttribute
 from django.utils import timezone
 import time
 
+
 class User(AbstractUser):
     pass
 
@@ -107,7 +108,7 @@ class ItemListing(models.Model):
 class Bid(models.Model):
     bid = models.DecimalField(max_digits=128, decimal_places=2)
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
-    bidItem = models.ForeignKey(ItemListing, related_name="bids", on_delete=models.CASCADE)
+    bidItem = models.ForeignKey(ItemListing, related_name="bids", on_delete=models.CASCADE, blank=True, null=True)
     bidPlaced = models.DateTimeField(default=datetime.datetime.now(datetime.timezone.utc))
 
     """def highest_bid(self):
@@ -118,8 +119,7 @@ class Bid(models.Model):
             for i in self.bids:
                 if i.bid > highest.bid:
                     highest = i
-                else:
-                    pass
+                return highest
         return highest"""
 
 class Profile(models.Model):
