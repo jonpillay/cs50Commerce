@@ -24,11 +24,11 @@ class ItemListing(models.Model):
     name = models.CharField(max_length=64)
     img = models.ImageField(upload_to ='images/')
     description = models.CharField(max_length=10000)
-    auctionStart = models.DateTimeField(blank=True, default=datetime.datetime.utcnow)
+    auctionStart = models.DateTimeField(null=True, blank=True)
     auctionEnd = models.DateTimeField(null=True, blank=True)
     startingBid = models.DecimalField(null=True, blank=True, max_digits=128, decimal_places=2)
     """bids = models.ForeignKey('Bid', on_delete=models.DO_NOTHING, related_name="item")"""
-    highestBid = models.ForeignKey('Bid', null=True, blank=True, on_delete=models.DO_NOTHING)
+    highestBid = models.ForeignKey('Bid', null=True, blank=True, on_delete=models.DO_NOTHING, default=None)
 
     def is_active(self):
         now = datetime.datetime.now(timezone.utc).replace(microsecond=0)

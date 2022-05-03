@@ -198,12 +198,6 @@ class NewListingForm (forms.Form):
     auctionStart = forms.DateTimeField(label="Auction Start", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
     auctionEnd = forms.DateTimeField(label="Auction End", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
 
-    def auctionStart(self, *arg, **kwarg):
-        now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
-        auctionStart = self.cleaned_data.get("auctionStart")
-        if now > auctionStart:
-            raise forms.ValidationError("Start cannot be in the Past!")
-
 def new_listing(request):
     if request.method == "POST":
         if not request.user.is_authenticated:
@@ -323,7 +317,6 @@ def test_form(request, item_id):
 def new_bid(request, item_id):
     if request.method == "POST":
         form = NewBidModel(request.POST)
-        item = ItemListing.objects.get(pk=item_id)
         if not request.user.is_authenticated:
             now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
             return render(request, "auctions/index.html", {
@@ -342,7 +335,7 @@ def new_bid(request, item_id):
                 return render(request, "auctions/index.html", {
                     "items": ItemListing.objects.all(),
                     "now": now,
-                    "bidForm": NewBidForm,
+                    "bidForm": NewBidModel,
                     "message": "No Bid Rigging"
                 })
             if bidItem.is_active():
@@ -357,9 +350,10 @@ def new_bid(request, item_id):
                         print("this " + obj.bidItem.name)
                         bidItem.highestBid = obj
                         bidItem.save(update_fields=['highestBid'])
-                        return HttpResponseRedirect(reverse("index"))
-                    else:
-                        pass
+                        if 'nextCont' not in locals():
+                            return HttpResponseRedirect(next)
+                        else:
+                            return HttpResponseRedirect(nextCont)
                 else:
                     if bid > bidItem.highestBid.bid:
                         obj = Bid.objects.create(
@@ -375,7 +369,14 @@ def new_bid(request, item_id):
                         print(bidList)
                         bidItem.highestBid = obj
                         bidItem.save(update_fields=['highestBid'])
-                        return HttpResponseRedirect(reverse("index"))
+                        print("Got this far with the bug")
+                        print(request.POST)
+                        next = request.POST.get('page', '/')
+                        if 'item' in next:
+                            print(next)
+                            return HttpResponseRedirect(reverse(next, args=[item_id]))
+                        else:
+                            return HttpResponseRedirect(reverse(next))
                     else:
                         now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
                         return render(request, "auctions/index.html", {
@@ -388,17 +389,33 @@ def new_bid(request, item_id):
                 print("item is_active check working")
                 return HttpResponseRedirect(reverse("index"))
         else:
+            print("Why the fuck is next not updating?")
+            next = request.POST.get('page', '/')
+            print("this is next the python variable" + next)
             errorID = item_id
             now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
-            return render(request, "auctions/index.html", {
-                    "items": ItemListing.objects.all(),
-                    "now": now,
-                    "errorID": errorID,
-                    "errorForm": form,
-                    "bidForm": NewBidModel,
-                })
+            if "item" in next:
+                print("Check for item word worked")
+                item = ItemListing.objects.get(id=item_id)
+                return render(request, "auctions/item.html", {
+                        "item": item,
+                        "items": ItemListing.objects.all(),
+                        "now": now,
+                        "errorID": errorID,
+                        "errorForm": form,
+                        "bidForm": NewBidModel,
+                    })
+            else:
+                return render(request, "auctions/index.html", {
+                        "items": ItemListing.objects.all(),
+                        "now": now,
+                        "errorID": errorID,
+                        "errorForm": form,
+                        "bidForm": NewBidModel,
+                    })
 
-def item_page(request, item_id):
+def item_page(request, item_id, error_form=None):
+    errorID = item_id
     item = ItemListing.objects.get(id=item_id)
     now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
     return render(request, "auctions/item.html", {
@@ -406,7 +423,9 @@ def item_page(request, item_id):
         "commentForm": CommentForm,
         "bidForm": NewBidModel,
         "now": now,
-        "end": item.auctionEnd.timestamp()
+        "end": item.auctionEnd.timestamp(),
+        "errorID": errorID,
+        "errorForm": error_form
     })
 
 def close_item(request, item_id):

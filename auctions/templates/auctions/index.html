@@ -74,6 +74,8 @@
                             <form action="{% url 'new_bid' item.id %}" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" value="{{item.id}}" name="id">
+                                <input type="hidden" value="{{request.path}}" name="next">
+                                <input type="hidden" value="index" name="page">
                                 {{ errorForm }}
                                 <input type="submit" value="Submit">
                             </form>
@@ -81,20 +83,25 @@
                             <form action="{% url 'new_bid' item.id %}" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" value="{{item.id}}" name="id">
+                                <input type="hidden" value="{{request.path}}" name="next">
+                                <input type="hidden" value="index" name="page">
                                 {{ bidForm }}
                                 <input type="submit" value="Submit">
                             </form>
                             {% endif %}
-                            {% if user.profile and request.user.profile not in item.watching.all %}
-                                <form action="{% url 'watch' item.id %}" method="post">
-                                    {%csrf_token%}
-                                    <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
-                                </form>
+                            {% if user.is_authenticated %}
+                                {% if user.profile and request.user.profile not in item.watching.all %}
+                                    <form action="{% url 'watch' item.id %}" method="post">
+                                        {%csrf_token%}
+                                        <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
+                                    </form>
+                                {% else %}
+                                    <form action="{% url 'unwatch' item.id %}" method="post">
+                                        {%csrf_token%}
+                                        <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
+                                    </form>
+                                {% endif %}
                             {% else %}
-                                <form action="{% url 'unwatch' item.id %}" method="post">
-                                    {%csrf_token%}
-                                    <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
-                                </form>
                             {% endif %}
                         {% endif %}
                     </div>

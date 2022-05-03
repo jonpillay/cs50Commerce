@@ -5,10 +5,10 @@ from django.core.validators import *
 from .models import *
 import urllib.request
 
-"""class NewListingForm(ModelForm):
+class NewListingModel(ModelForm):
     class Meta:
         model = ItemListing
-        fields = '__all__'"""
+        fields = '__all__'
 
 class NewBidModel(ModelForm):
     class Meta:
@@ -23,6 +23,8 @@ class NewBidModel(ModelForm):
         if args:
             unpack = args[0]
             id = unpack.get('id')
+            next = unpack.get('next')
+            print(next)
             item = ItemListing.objects.get(pk=id)
             self.bidItem = item
         super(NewBidModel, self).__init__(*args, **kwargs)
@@ -40,9 +42,14 @@ class NewBidModel(ModelForm):
         print(bid)
         print(item)
         print("check at least ran")
-        print("This is the highest bid! " + str(item.highestBid.bid))
-        if bid<=item.highestBid.bid:
-            raise forms.ValidationError("Please raise your bid")
+        if item.highestBid == None:
+            if bid<=item.startingBid:
+                raise forms.ValidationError("Please raise your bid")
+            else:
+                return cleaned_data
         else:
-            print("the check cleared!")
-            return cleaned_data
+            if bid<=item.highestBid.bid:
+                raise forms.ValidationError("Please raise your bid")
+            else:
+                print("the check cleared!")
+                return cleaned_data
