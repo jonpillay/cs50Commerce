@@ -2,11 +2,13 @@ from pickle import FALSE
 from tkinter import Widget
 from unittest.util import _MAX_LENGTH
 from urllib import request
+from django.core import validators
+from auctions.forms import *
 
 from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.forms import DateField, Form, ModelForm, widgets
+from django.forms import *
 from django.forms.fields import CharField
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http.response import Http404
@@ -45,10 +47,11 @@ def index(request):
                         "word": word.capitalize(),
                 })
     now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+    form = NewBidModel
     return render(request, "auctions/index.html", {
         "items": ItemListing.objects.all(),
         "now": now,
-        "bidForm": NewBidForm,
+        "bidForm": form,
         "searchform": SearchForm
     })
 
@@ -178,28 +181,29 @@ def create_profile(request, user_id):
             raise Http404
 
 def profile(request, user_id):
-    profile = Profile.objects.get(pk=user_id)
-    now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
-    return render(request, "auctions/profile.html",{
-        "profile": profile,
-        "now": now,
-        "commentForm": CommentForm,
-        "bidForm": NewBidForm, 
-    })
+    if len(Profile.objects.filter(pk=user_id)) == 0:
+        print("profile None check is working")
+        dummy = User.objects.get(pk=user_id)
+        return render(request, "auctions/no_profile.html", {
+            "missing_profile": dummy
+        })
+    else:
+        profile = Profile.objects.get(pk=user_id)
+        now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+        return render(request, "auctions/profile.html",{
+            "profile": profile,
+            "now": now,
+            "commentForm": CommentForm,
+            "bidForm": NewBidForm, 
+        })
 
 class NewListingForm (forms.Form):
-    itemName = forms.CharField(max_length=128, label="What's that then?")
-    itemDescript = forms.CharField(widget=forms.Textarea, label="Tel us about it")
+    itemName = forms.CharField(max_length=24, label="What's that then?")
+    itemDescript = forms.CharField(widget=forms.Textarea, max_length=512, label="Tel us about it")
     itemImage = forms.ImageField(label="Show us a photo")
     startingBid = forms.DecimalField(decimal_places=2, label="What is your starting bid?")
     auctionStart = forms.DateTimeField(label="Auction Start", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
     auctionEnd = forms.DateTimeField(label="Auction End", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
-
-    def auctionStart(self, *arg, **kwarg):
-        now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
-        auctionStart = self.cleaned_data.get("auctionStart")
-        if now > auctionStart:
-            raise forms.ValidationError("Start cannot be in the Past!")
 
 def new_listing(request):
     if request.method == "POST":
@@ -235,83 +239,200 @@ def new_listing(request):
 class NewBidForm(forms.Form):
     bid = forms.DecimalField(decimal_places=2, label="Place bid")
 
-def new_bid(request, item_id):
-        if request.method == "POST":
-            if not request.user.is_authenticated:
+def test_form(request, item_id):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+            return render(request, "auctions/index.html", {
+                "items": ItemListing.objects.all(),
+                "now": now,
+                "bidForm": NewBidForm,
+                "message": "Please login in to Bid!"
+            })
+        form = NewBidModel(request.POST)
+        if form.is_valid():
+            print("form was valid")
+            print(form)
+            bid = form.cleaned_data['bid']
+            bidItem = ItemListing.objects.get(pk=item_id)
+            bidder = request.user
+            if bidder == bidItem.seller:
                 now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
                 return render(request, "auctions/index.html", {
                     "items": ItemListing.objects.all(),
                     "now": now,
                     "bidForm": NewBidForm,
-                    "message": "Please login in to Bid!"
+                    "message": "No Bid Rigging"
                 })
-            form = NewBidForm(request.POST)
-            if form.is_valid():
-                bid = form.cleaned_data['bid']
-                bidItem = ItemListing.objects.get(pk=item_id)
-                bidder = request.user
-                if bidder == bidItem.seller:
-                    now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
-                    return render(request, "auctions/index.html", {
-                        "items": ItemListing.objects.all(),
-                        "now": now,
-                        "bidForm": NewBidForm,
-                        "message": "No Bid Rigging"
-                    })
-                if bidItem.is_active():
-                    if bidItem.highestBid == None:
-                        if bid > bidItem.startingBid:
-                            obj = Bid.objects.create(
-                                    bid = bid,
-                                    bidder = bidder,
-                                    bidItem = bidItem
-                                )
-                            obj.save()
-                            print("this " + obj.bidItem.name)
-                            bidItem.highestBid = obj
-                            bidItem.save(update_fields=['highestBid'])
-                            return HttpResponseRedirect(reverse("index")) 
-                        else:
-                            pass
-                    else:
-                        if bid > bidItem.highestBid.bid:
-                            obj = Bid.objects.create(
+            if bidItem.is_active():
+                if bidItem.highestBid == None:
+                    if bid > bidItem.startingBid:
+                        obj = Bid.objects.create(
                                 bid = bid,
                                 bidder = bidder,
                                 bidItem = bidItem
                             )
-                            obj.save()
-                            bidList = Bid.objects.filter(bidItem=bidItem)
-                            print(bidList)
-                            bidItem.bids.add(obj)
-                            bidList = Bid.objects.filter(bidItem=bidItem)
-                            print(bidList)
-                            bidItem.highestBid = obj
-                            bidItem.save(update_fields=['highestBid'])
-                            return HttpResponseRedirect(reverse("index"))
-                        else:
-                            now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
-                            return render(request, "auctions/index.html", {
-                                "items": ItemListing.objects.all(),
-                                "now": now,
-                                "bidForm": NewBidForm,
-                                "message": "Not High Enough Buddy"
-                            })
+                        obj.save()
+                        print("this " + obj.bidItem.name)
+                        bidItem.highestBid = obj
+                        bidItem.save(update_fields=['highestBid'])
+                        return HttpResponseRedirect(reverse("index"))
+                    else:
+                        pass
                 else:
-                    print("item is_active check working")
-                    return HttpResponseRedirect(reverse("index"))
+                    if bid > bidItem.highestBid.bid:
+                        obj = Bid.objects.create(
+                            bid = bid,
+                            bidder = bidder,
+                            bidItem = bidItem
+                        )
+                        obj.save()
+                        bidList = Bid.objects.filter(bidItem=bidItem)
+                        print(bidList)
+                        bidItem.bids.add(obj)
+                        bidList = Bid.objects.filter(bidItem=bidItem)
+                        print(bidList)
+                        bidItem.highestBid = obj
+                        bidItem.save(update_fields=['highestBid'])
+                        return HttpResponseRedirect(reverse("index"))
+                    else:
+                        now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+                        return render(request, "auctions/index.html", {
+                            "items": ItemListing.objects.all(),
+                            "now": now,
+                            "bidForm": NewBidModel,
+                            "message": "Not High Enough Buddy"
+                        })
             else:
-                raise Http404
+                print("item is_active check working")
+                return HttpResponseRedirect(reverse("index"))
+        else:
+            """When rerendering the page for the index, see if you can reinsert the error message relating to the item_id...
+            so it renders on the corrent form"""
+            now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+            return render(request, "auctions/validator_test.html", {
+            "bidForm": form,
+            "now": now,
+        })
+    else:
+        now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+        return render(request, "auctions/validator_test.html", {
+        "bidForm": NewBidForm,
+        "now": now,
+    })
 
-def item_page(request, item_id):
+def new_bid(request, item_id):
+    if request.method == "POST":
+        form = NewBidModel(request.POST)
+        if not request.user.is_authenticated:
+            now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+            return render(request, "auctions/index.html", {
+                "items": ItemListing.objects.all(),
+                "now": now,
+                "bidForm": NewBidForm,
+                "message": "Please login in to Bid!"
+            })
+        if form.is_valid():
+            print("form was valid")
+            bid = form.cleaned_data['bid']
+            bidItem = ItemListing.objects.get(pk=item_id)
+            bidder = request.user
+            if bidder == bidItem.seller:
+                now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+                return render(request, "auctions/index.html", {
+                    "items": ItemListing.objects.all(),
+                    "now": now,
+                    "bidForm": NewBidModel,
+                    "message": "No Bid Rigging"
+                })
+            if bidItem.is_active():
+                if bidItem.highestBid == None:
+                    if bid > bidItem.startingBid:
+                        obj = Bid.objects.create(
+                                bid = bid,
+                                bidder = bidder,
+                                bidItem = bidItem
+                            )
+                        obj.save()
+                        print("this " + obj.bidItem.name)
+                        bidItem.highestBid = obj
+                        bidItem.save(update_fields=['highestBid'])
+                        if 'nextCont' not in locals():
+                            return HttpResponseRedirect(next)
+                        else:
+                            return HttpResponseRedirect(nextCont)
+                else:
+                    if bid > bidItem.highestBid.bid:
+                        obj = Bid.objects.create(
+                            bid = bid,
+                            bidder = bidder,
+                            bidItem = bidItem
+                        )
+                        obj.save()
+                        bidList = Bid.objects.filter(bidItem=bidItem)
+                        print(bidList)
+                        bidItem.bids.add(obj)
+                        bidList = Bid.objects.filter(bidItem=bidItem)
+                        print(bidList)
+                        bidItem.highestBid = obj
+                        bidItem.save(update_fields=['highestBid'])
+                        print("Got this far with the bug")
+                        print(request.POST)
+                        next = request.POST.get('page', '/')
+                        if 'item' in next:
+                            print(next)
+                            return HttpResponseRedirect(reverse(next, args=[item_id]))
+                        else:
+                            return HttpResponseRedirect(reverse(next))
+                    else:
+                        now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+                        return render(request, "auctions/index.html", {
+                            "items": ItemListing.objects.all(),
+                            "now": now,
+                            "bidForm": NewBidModel,
+                            "message": "Not High Enough Buddy"
+                        })
+            else:
+                print("item is_active check working")
+                return HttpResponseRedirect(reverse("index"))
+        else:
+            print("Why the fuck is next not updating?")
+            next = request.POST.get('page', '/')
+            print("this is next the python variable" + next)
+            errorID = item_id
+            now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+            if "item" in next:
+                print("Check for item word worked")
+                item = ItemListing.objects.get(id=item_id)
+                return render(request, "auctions/item.html", {
+                        "item": item,
+                        "items": ItemListing.objects.all(),
+                        "now": now,
+                        "errorID": errorID,
+                        "errorForm": form,
+                        "bidForm": NewBidModel,
+                    })
+            else:
+                return render(request, "auctions/index.html", {
+                        "items": ItemListing.objects.all(),
+                        "now": now,
+                        "errorID": errorID,
+                        "errorForm": form,
+                        "bidForm": NewBidModel,
+                    })
+
+def item_page(request, item_id, error_form=None):
+    errorID = item_id
     item = ItemListing.objects.get(id=item_id)
     now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
     return render(request, "auctions/item.html", {
         "item": item,
         "commentForm": CommentForm,
-        "bidForm": NewBidForm,
+        "bidForm": NewBidModel,
         "now": now,
-        "end": item.auctionEnd.timestamp()
+        "end": item.auctionEnd.timestamp(),
+        "errorID": errorID,
+        "errorForm": error_form
     })
 
 def close_item(request, item_id):

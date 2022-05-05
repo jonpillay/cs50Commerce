@@ -70,21 +70,38 @@
                         {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
                             <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
                         {% elif not item.seller == request.user and item.is_active %}
-                            <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'new_bid' item.id %}" method="post">
+                            {% if item.id == errorID %}
+                            <form action="{% url 'new_bid' item.id %}" method="post">
                                 {% csrf_token %}
+                                <input type="hidden" value="{{item.id}}" name="id">
+                                <input type="hidden" value="{{request.path}}" name="next">
+                                <input type="hidden" value="index" name="page">
+                                {{ errorForm }}
+                                <input type="submit" value="Submit">
+                            </form>
+                            {% else %}
+                            <form action="{% url 'new_bid' item.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{item.id}}" name="id">
+                                <input type="hidden" value="{{request.path}}" name="next">
+                                <input type="hidden" value="index" name="page">
                                 {{ bidForm }}
                                 <input type="submit" value="Submit">
                             </form>
-                            {% if user.profile and request.user.profile not in item.watching.all %}
-                                <form action="{% url 'watch' item.id %}" method="post">
-                                    {%csrf_token%}
-                                    <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
-                                </form>
+                            {% endif %}
+                            {% if user.is_authenticated %}
+                                {% if user.profile and request.user.profile not in item.watching.all %}
+                                    <form action="{% url 'watch' item.id %}" method="post">
+                                        {%csrf_token%}
+                                        <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
+                                    </form>
+                                {% else %}
+                                    <form action="{% url 'unwatch' item.id %}" method="post">
+                                        {%csrf_token%}
+                                        <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
+                                    </form>
+                                {% endif %}
                             {% else %}
-                                <form action="{% url 'unwatch' item.id %}" method="post">
-                                    {%csrf_token%}
-                                    <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
-                                </form>
                             {% endif %}
                         {% endif %}
                     </div>

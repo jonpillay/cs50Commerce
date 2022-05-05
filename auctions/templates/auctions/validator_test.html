@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% block title %}
+    Auctions
+{% endblock %}
+{% block body %}
+    <div id="cat_div">
+        <h1>Validator form test</h1>
+        <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'test_form' 4 %}" method="post">
+            {% csrf_token %}
+            {{ bidForm }}
+            <input type="submit" value="Submit">
+        </form>
+            
+    </div>
+{% endblock %}

@@ -14,6 +14,7 @@ from django.db.models.query_utils import DeferredAttribute
 from django.utils import timezone
 import time
 
+
 class User(AbstractUser):
     pass
 
@@ -23,11 +24,11 @@ class ItemListing(models.Model):
     name = models.CharField(max_length=64)
     img = models.ImageField(upload_to ='images/')
     description = models.CharField(max_length=10000)
-    auctionStart = models.DateTimeField(blank=True, default=datetime.datetime.utcnow)
+    auctionStart = models.DateTimeField(null=True, blank=True)
     auctionEnd = models.DateTimeField(null=True, blank=True)
     startingBid = models.DecimalField(null=True, blank=True, max_digits=128, decimal_places=2)
     """bids = models.ForeignKey('Bid', on_delete=models.DO_NOTHING, related_name="item")"""
-    highestBid = models.ForeignKey('Bid', null=True, blank=True, on_delete=models.DO_NOTHING)
+    highestBid = models.ForeignKey('Bid', null=True, blank=True, on_delete=models.DO_NOTHING, default=None)
 
     def is_active(self):
         now = datetime.datetime.now(timezone.utc).replace(microsecond=0)
@@ -53,7 +54,7 @@ class ItemListing(models.Model):
             return False        
 
     def get_last_6(self):
-        bids = Bid.objects.filter(bidItem=self).order_by('-bidPlaced')[:6:-1]
+        bids = Bid.objects.filter(bidItem=self).order_by('-bid')[:6:-1]
         return bids
 
     def get_remain(self):
@@ -105,9 +106,9 @@ class ItemListing(models.Model):
             pass
 
 class Bid(models.Model):
-    bid = models.DecimalField(max_digits=128, decimal_places=2)
+    bid = models.DecimalField(max_digits=16, decimal_places=2)
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
-    bidItem = models.ForeignKey(ItemListing, related_name="bids", on_delete=models.CASCADE)
+    bidItem = models.ForeignKey(ItemListing, related_name="bids", on_delete=models.CASCADE, blank=True, null=True)
     bidPlaced = models.DateTimeField(default=datetime.datetime.now(datetime.timezone.utc))
 
     """def highest_bid(self):
@@ -118,8 +119,7 @@ class Bid(models.Model):
             for i in self.bids:
                 if i.bid > highest.bid:
                     highest = i
-                else:
-                    pass
+                return highest
         return highest"""
 
 class Profile(models.Model):
