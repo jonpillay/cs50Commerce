@@ -1,5 +1,4 @@
 *.pyc
 auctions/__pycache__/views.cpython-310.pyc
 db.sqlite3
-*.media
-media
+media/images
