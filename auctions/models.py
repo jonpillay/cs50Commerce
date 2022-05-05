@@ -54,7 +54,7 @@ class ItemListing(models.Model):
             return False        
 
     def get_last_6(self):
-        bids = Bid.objects.filter(bidItem=self).order_by('-bidPlaced')[:6:-1]
+        bids = Bid.objects.filter(bidItem=self).order_by('-bid')[:6:-1]
         return bids
 
     def get_remain(self):
@@ -106,7 +106,7 @@ class ItemListing(models.Model):
             pass
 
 class Bid(models.Model):
-    bid = models.DecimalField(max_digits=128, decimal_places=2)
+    bid = models.DecimalField(max_digits=16, decimal_places=2)
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
     bidItem = models.ForeignKey(ItemListing, related_name="bids", on_delete=models.CASCADE, blank=True, null=True)
     bidPlaced = models.DateTimeField(default=datetime.datetime.now(datetime.timezone.utc))

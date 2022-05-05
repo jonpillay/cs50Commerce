@@ -181,18 +181,25 @@ def create_profile(request, user_id):
             raise Http404
 
 def profile(request, user_id):
-    profile = Profile.objects.get(pk=user_id)
-    now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
-    return render(request, "auctions/profile.html",{
-        "profile": profile,
-        "now": now,
-        "commentForm": CommentForm,
-        "bidForm": NewBidForm, 
-    })
+    if len(Profile.objects.filter(pk=user_id)) == 0:
+        print("profile None check is working")
+        dummy = User.objects.get(pk=user_id)
+        return render(request, "auctions/no_profile.html", {
+            "missing_profile": dummy
+        })
+    else:
+        profile = Profile.objects.get(pk=user_id)
+        now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+        return render(request, "auctions/profile.html",{
+            "profile": profile,
+            "now": now,
+            "commentForm": CommentForm,
+            "bidForm": NewBidForm, 
+        })
 
 class NewListingForm (forms.Form):
-    itemName = forms.CharField(max_length=128, label="What's that then?")
-    itemDescript = forms.CharField(widget=forms.Textarea, label="Tel us about it")
+    itemName = forms.CharField(max_length=24, label="What's that then?")
+    itemDescript = forms.CharField(widget=forms.Textarea, max_length=512, label="Tel us about it")
     itemImage = forms.ImageField(label="Show us a photo")
     startingBid = forms.DecimalField(decimal_places=2, label="What is your starting bid?")
     auctionStart = forms.DateTimeField(label="Auction Start", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))

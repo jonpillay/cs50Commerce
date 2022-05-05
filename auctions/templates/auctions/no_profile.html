@@ -1,0 +1,9 @@
+{% extends "auctions/layout.html" %}
+
+{% load static %}
+
+{% block body %}
+<h1>{{missing_profile.username}} has no profile! If you see them, tell them to create one.</h1>
+<br>
+<a href="{{ request.META.HTTP_REFERER }}">Click here</a> to return to previous page.
+{% endblock %}
