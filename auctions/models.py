@@ -1,7 +1,7 @@
 from email.policy import default
 from pyexpat import model
 from tkinter import CASCADE
-from unicodedata import category
+from unicodedata import *
 from urllib import request
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -21,6 +21,9 @@ class User(AbstractUser):
 
 class Category(models.Model):
     name = models.CharField(max_length=40)
+
+    def __str__(self):
+        return self.name
 class ItemListing(models.Model):
     seller = models.ForeignKey(User, default=1, on_delete=models.CASCADE, related_name="saleItems")
     name = models.CharField(max_length=64)

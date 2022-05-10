@@ -181,6 +181,23 @@ def create_profile(request, user_id):
         else:
             raise Http404
 
+def category_index(request):
+    category_list = Category.objects.order_by("name")
+    return render(request, "auctions/category_index.html", {
+        "categories": category_list,
+    })
+
+def category(request, category_id):
+    category = Category.objects.get(pk=category_id)
+    category_list = ItemListing.objects.filter(category=category)
+    now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+    return render(request, "auctions/category.html", {
+        "category": category,
+        "now": now,
+        "item_list": category_list,
+        "bidForm": NewBidForm,
+    })
+
 def profile(request, user_id):
     print("This is ")
     print(user_id)
@@ -207,7 +224,7 @@ class NewListingForm (forms.Form):
     startingBid = forms.DecimalField(decimal_places=2, label="What is your starting bid?")
     auctionStart = forms.DateTimeField(label="Auction Start: ", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
     auctionEnd = forms.DateTimeField(label="Auction End: ", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
-    category = forms.CharField(label= "Catogery: ", widget=forms.Select(choices=Category.objects.all()))
+    category = forms.ModelChoiceField(label= "Catogery", queryset=Category.objects.order_by("name"), required=False)
 
 def new_listing(request):
     if request.method == "POST":
@@ -222,6 +239,7 @@ def new_listing(request):
             startingBid = form.cleaned_data["startingBid"]
             auctionStart = form.cleaned_data["auctionStart"]
             auctionEnd = form.cleaned_data["auctionEnd"]
+            category = form.cleaned_data["category"]
             obj = ItemListing.objects.create(
                 name = name,
                 description = description,
@@ -229,7 +247,8 @@ def new_listing(request):
                 seller = seller,
                 auctionStart = auctionStart,
                 auctionEnd = auctionEnd,
-                startingBid = startingBid
+                startingBid = startingBid,
+                category = category,
             )
             obj.save()
             return HttpResponseRedirect(reverse("index"))

@@ -27,14 +27,13 @@
             </div>
             <div style="border-style: dotted;">
             {% if request.user == item.seller and item.is_active %}
-                <h3>No bid rigging, {{request.user}}</h3>
+            <h3>No bid rigging, {{request.user}}</h3>
             {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
-                <h3>You are the winner {{item.highestBid.bidder}}</h3>
+            <h3>You are the winner {{item.highestBid.bidder}}</h3>
             {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
-                <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
+            <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
             {% elif not item.seller == request.user and item.is_active %}
             {% if errorForm %}
-            <div>
                 <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'new_bid' item.id %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" value="{{item.id}}" name="id">
@@ -43,9 +42,7 @@
                     {{ errorForm }}
                     <input type="submit" value="Submit">
                 </form>
-            </div>
             {% else %}
-            <div>
                 <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'new_bid' item.id %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" value="{{item.id}}" name="id">
@@ -54,7 +51,6 @@
                     {{ bidForm }}
                     <input type="submit" value="Submit">
                 </form>
-            </div>
             {% endif %}
             {% endif %}
             </div>

@@ -4,12 +4,12 @@
 
 {% block body %}
     <div class="w3-container" style="border-style: dotted; min-width: 1540px;">
-    <h2 style="display: inline-block;">Active Listings</h2>
+    <h1 style="display: inline-block;">{{category}}</h1>
     {% if message %}
         <h3 style="display: inline; float: right; margin-right: 10%;">{{ message }}!!!</h3>
     {% endif %}
     <ul style="list-style: none; margin-left: -1%;">
-    {% for item in items %}
+    {% for item in item_list %}
         {% if item.is_active %}
         <li>
             <div style="display: grid; grid-template-columns: 18% 57% 25%; height: 300px;" id="listing">
@@ -47,7 +47,7 @@
                 </div>
                 <div style="border-style: dotted; display: grid; grid-template-rows: 20% 55% 25%; background-color: crimson;">
                     <div style="border-style: dotted;">
-                        <h3 class="nav-link">Category: <a href="{% url 'category' item.category.id %}">{{item.category}}</a></h3>
+                        <h3>Last 6 Shots!</h3>
                     </div>
                     <div style="border-style: dotted;">
                         {% if item.is_active %}
@@ -89,17 +89,19 @@
                                     {{ bidForm }}
                                     <input type="submit" value="Submit">
                                 </form>
-                                {% if user.profile and request.user.profile not in item.watching.all %}
-                                <form action="{% url 'watch' item.id %}" method="post">
-                                    {%csrf_token%}
-                                    <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
-                                </form>
-                                {% elif user.profile and request.user.profile in item.watching.all %}
-                                <form action="{% url 'unwatch' item.id %}" method="post">
-                                    {%csrf_token%}
-                                    <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
-                                </form>
-                                {% endif %}
+                                
+                                
+                                    {% if user.profile and request.user.profile not in item.watching.all %}
+                                        <form action="{% url 'watch' item.id %}" method="post">
+                                            {%csrf_token%}
+                                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
+                                        </form>
+                                    {% elif user.profile and request.user.profile in item.watching.all %}
+                                        <form action="{% url 'unwatch' item.id %}" method="post">
+                                            {%csrf_token%}
+                                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
+                                        </form>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
                         {% else %}
