@@ -10,7 +10,6 @@
     {% endif %}
     <ul style="list-style: none; margin-left: -1%;">
     {% for item in watchlist %}
-        {% if item.is_active %}
         <li>
             <div style="display: grid; grid-template-columns: 18% 57% 25%; height: 300px;" id="listing">
                 <div style="border-style: dotted;">
@@ -75,16 +74,15 @@
                                 {{ bidForm }}
                                 <input type="submit" value="Submit">
                             </form>
-                            <form action="{% url 'watch' item.id %}" method="post">
+                            <form action="{% url 'unwatch' item.id %}" method="post">
                                 {%csrf_token%}
-                                <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
+                                <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
                             </form>
                         {% endif %}
                     </div>
                 </div>
             </div>    
         </li>
-        {% endif %}
     {% endfor %}
     </ul>
     </div>

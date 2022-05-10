@@ -132,7 +132,8 @@ def new_comment(request, item_id=None, profile_id=None):
                     comment = comment
                 )
                 obj.save()
-                return redirect('profile', user_id=commentProfile.id)
+                print("Comment profile id is " + str(commentProfile.owner.id))
+                return HttpResponseRedirect(reverse('profile', args=[commentProfile.owner.id]))
         else:
             form = CommentForm(request.POST)
             if form.is_valid():
@@ -181,14 +182,16 @@ def create_profile(request, user_id):
             raise Http404
 
 def profile(request, user_id):
-    if len(Profile.objects.filter(pk=user_id)) == 0:
+    print("This is ")
+    print(user_id)
+    if len(Profile.objects.filter(owner=User.objects.get(pk=user_id))) == 0:
         print("profile None check is working")
         dummy = User.objects.get(pk=user_id)
         return render(request, "auctions/no_profile.html", {
             "missing_profile": dummy
         })
     else:
-        profile = Profile.objects.get(pk=user_id)
+        profile = Profile.objects.get(owner=User.objects.get(pk=user_id))
         now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
         return render(request, "auctions/profile.html",{
             "profile": profile,
@@ -202,8 +205,9 @@ class NewListingForm (forms.Form):
     itemDescript = forms.CharField(widget=forms.Textarea, max_length=512, label="Tel us about it")
     itemImage = forms.ImageField(label="Show us a photo")
     startingBid = forms.DecimalField(decimal_places=2, label="What is your starting bid?")
-    auctionStart = forms.DateTimeField(label="Auction Start", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
-    auctionEnd = forms.DateTimeField(label="Auction End", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
+    auctionStart = forms.DateTimeField(label="Auction Start: ", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
+    auctionEnd = forms.DateTimeField(label="Auction End: ", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
+    category = forms.CharField(label= "Catogery: ", widget=forms.Select(choices=Category.objects.all()))
 
 def new_listing(request):
     if request.method == "POST":
@@ -357,10 +361,12 @@ def new_bid(request, item_id):
                         print("this " + obj.bidItem.name)
                         bidItem.highestBid = obj
                         bidItem.save(update_fields=['highestBid'])
-                        if 'nextCont' not in locals():
-                            return HttpResponseRedirect(next)
+                        next = request.POST.get('page', '/')
+                        if 'item' in next:
+                            print(next)
+                            return HttpResponseRedirect(reverse(next, args=[item_id]))
                         else:
-                            return HttpResponseRedirect(nextCont)
+                            return HttpResponseRedirect(reverse(next))
                 else:
                     if bid > bidItem.highestBid.bid:
                         obj = Bid.objects.create(
@@ -444,7 +450,7 @@ def close_item(request, item_id):
         if request.user == item.seller:
             item.auctionEnd = now
             item.save()
-            return redirect('item', item_id=item.id)
+            return HttpResponseRedirect(reverse('item', args=[item_id]))
         else:
             raise Http404
 
@@ -453,7 +459,7 @@ def watch(request, item_id):
         if not request.user.is_authenticated:
             raise Http404
         item = ItemListing.objects.get(pk=item_id)
-        profile = Profile.objects.get(pk=int(request.user.id))
+        profile = Profile.objects.get(owner=request.user)
         profile.watchlist.add(item)
         print("Success!!!")
         return HttpResponseRedirect(reverse('index'))
@@ -463,7 +469,7 @@ def unwatch(request, item_id):
         if not request.user.is_authenticated:
             raise Http404
         item = ItemListing.objects.get(pk=item_id)
-        profile = Profile.objects.get(pk=int(request.user.id))
+        profile = Profile.objects.get(owner=request.user)
         profile.watchlist.remove(item)
         print("Success!!!")
         return HttpResponseRedirect(reverse('index'))
@@ -474,7 +480,10 @@ def watchlist(request):
     watchlist = profile.watchlist.all()
     if watchlist == None:
         message = "Not Watching Anything"
+    else:
+        message = ""
     return render(request, "auctions/watchlist.html", {
+        "message": message,
         "watchlist": watchlist,
         "now": now,
         "bidForm": NewBidForm,

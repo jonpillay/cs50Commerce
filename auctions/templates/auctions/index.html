@@ -47,7 +47,7 @@
                 </div>
                 <div style="border-style: dotted; display: grid; grid-template-rows: 20% 55% 25%; background-color: crimson;">
                     <div style="border-style: dotted;">
-                        <h3>Last 5 Shots!</h3>
+                        <h3>Last 6 Shots!</h3>
                     </div>
                     <div style="border-style: dotted;">
                         {% if item.is_active %}
@@ -59,50 +59,53 @@
                         {% endif %}
                     </div>
                     <div style="border-style: dotted; position: relative;">
-                        {% if request.user == item.seller and item.is_active %}
-                            <h3>No bid rigging!</h3>
-                            <form action="{% url 'close_item' item.id %}" method="post">
-                                {%csrf_token%}
-                                <button type="submit" style="position: absolute; top: 30%; left: 75%;">Close {{item.name}}</button>
-                            </form>
-                        {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
-                            <h3>You are the winner {{item.highestBid.bidder}}</h3>
-                        {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
-                            <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
-                        {% elif not item.seller == request.user and item.is_active %}
-                            {% if item.id == errorID %}
-                            <form action="{% url 'new_bid' item.id %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" value="{{item.id}}" name="id">
-                                <input type="hidden" value="{{request.path}}" name="next">
-                                <input type="hidden" value="index" name="page">
-                                {{ errorForm }}
-                                <input type="submit" value="Submit">
-                            </form>
-                            {% else %}
-                            <form action="{% url 'new_bid' item.id %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" value="{{item.id}}" name="id">
-                                <input type="hidden" value="{{request.path}}" name="next">
-                                <input type="hidden" value="index" name="page">
-                                {{ bidForm }}
-                                <input type="submit" value="Submit">
-                            </form>
-                            {% endif %}
-                            {% if user.is_authenticated %}
-                                {% if user.profile and request.user.profile not in item.watching.all %}
-                                    <form action="{% url 'watch' item.id %}" method="post">
-                                        {%csrf_token%}
-                                        <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
-                                    </form>
+                        {% if user.is_authenticated %}
+                            {% if request.user == item.seller and item.is_active %}
+                                <h3>No bid rigging!</h3>
+                                <form action="{% url 'close_item' item.id %}" method="post">
+                                    {%csrf_token%}
+                                    <button type="submit" style="position: absolute; top: 30%; left: 75%;">Close {{item.name}}</button>
+                                </form>
+                            {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
+                                <h3>You are the winner {{item.highestBid.bidder}}</h3>
+                            {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
+                                <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
+                            {% elif not item.seller == request.user and item.is_active %}
+                                {% if item.id == errorID %}
+                                <form action="{% url 'new_bid' item.id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{item.id}}" name="id">
+                                    <input type="hidden" value="{{request.path}}" name="next">
+                                    <input type="hidden" value="index" name="page">
+                                    {{ errorForm }}
+                                    <input type="submit" value="Submit">
+                                </form>
                                 {% else %}
-                                    <form action="{% url 'unwatch' item.id %}" method="post">
-                                        {%csrf_token%}
-                                        <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
-                                    </form>
+                                <form action="{% url 'new_bid' item.id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{item.id}}" name="id">
+                                    <input type="hidden" value="{{request.path}}" name="next">
+                                    <input type="hidden" value="index" name="page">
+                                    {{ bidForm }}
+                                    <input type="submit" value="Submit">
+                                </form>
+                                
+                                
+                                    {% if user.profile and request.user.profile not in item.watching.all %}
+                                        <form action="{% url 'watch' item.id %}" method="post">
+                                            {%csrf_token%}
+                                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
+                                        </form>
+                                    {% elif user.profile and request.user.profile in item.watching.all %}
+                                        <form action="{% url 'unwatch' item.id %}" method="post">
+                                            {%csrf_token%}
+                                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
+                                        </form>
+                                    {% endif %}
                                 {% endif %}
-                            {% else %}
                             {% endif %}
+                        {% else %}
+                        <h3>Please Log In To Bid</h3>
                         {% endif %}
                     </div>
                 </div>

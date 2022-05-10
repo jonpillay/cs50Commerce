@@ -92,7 +92,7 @@
         {% endfor%}
     </ul>
 </div>
-<div style="border: dotted; border-color: blue; width: 80%; min-width: 1500px; margin: auto; display: grid; grid-template-columns: 65% 35%;">
+<div style="border: dotted; border-color: blue; width: 80%; min-width: 1500px; padding-top: 50px; margin: auto; display: grid; grid-template-columns: 65% 35%;">
     <div>
         <h1 style="padding: 10px;">Seller Reviews</h1>
         <ul style="list-style: none;">
@@ -112,6 +112,7 @@
         </ul>
     </div>
     <div>
+        {% if not request.user == profile.owner %}
         <div style="padding: 10px;">
             <h3>Leave Review for {{profile.first}} {{profile.lasts}}</h3>
             <form action="{% url 'new_profile_comment' profile_id=profile.id %}" method="post" style="width: 100%; padding: 12px 20px; margin: 8px 0; box-sizing: border-box;">
@@ -120,6 +121,7 @@
                 <input type="submit">
             </form>
         </div>
+        {% endif %}
     </div>
 </div>
 

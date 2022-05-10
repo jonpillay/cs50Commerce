@@ -1,6 +1,7 @@
 from email.policy import default
 from pyexpat import model
 from tkinter import CASCADE
+from unicodedata import category
 from urllib import request
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -18,7 +19,8 @@ import time
 class User(AbstractUser):
     pass
 
-
+class Category(models.Model):
+    name = models.CharField(max_length=40)
 class ItemListing(models.Model):
     seller = models.ForeignKey(User, default=1, on_delete=models.CASCADE, related_name="saleItems")
     name = models.CharField(max_length=64)
@@ -29,6 +31,7 @@ class ItemListing(models.Model):
     startingBid = models.DecimalField(null=True, blank=True, max_digits=128, decimal_places=2)
     """bids = models.ForeignKey('Bid', on_delete=models.DO_NOTHING, related_name="item")"""
     highestBid = models.ForeignKey('Bid', null=True, blank=True, on_delete=models.DO_NOTHING, default=None)
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="items", default=None)
 
     def is_active(self):
         now = datetime.datetime.now(timezone.utc).replace(microsecond=0)
@@ -104,6 +107,7 @@ class ItemListing(models.Model):
                 self.winningBid = self.highestBid
         else:
             pass
+
 
 class Bid(models.Model):
     bid = models.DecimalField(max_digits=16, decimal_places=2)
