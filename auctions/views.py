@@ -195,7 +195,7 @@ def category(request, category_id):
         "category": category,
         "now": now,
         "item_list": category_list,
-        "bidForm": NewBidForm,
+        "bidForm": NewBidModel,
     })
 
 def profile(request, user_id):
@@ -407,6 +407,8 @@ def new_bid(request, item_id):
                         if 'item' in next:
                             print(next)
                             return HttpResponseRedirect(reverse(next, args=[item_id]))
+                        elif "category" in next:
+                            return HttpResponseRedirect(reverse(next, args=[bidItem.category.id]))
                         else:
                             return HttpResponseRedirect(reverse(next))
                     else:
@@ -423,6 +425,7 @@ def new_bid(request, item_id):
         else:
             print("Why the fuck is next not updating?")
             next = request.POST.get('page', '/')
+            print(request.POST)
             print("this is next the python variable" + next)
             errorID = item_id
             now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
@@ -437,6 +440,21 @@ def new_bid(request, item_id):
                         "errorForm": form,
                         "bidForm": NewBidModel,
                     })
+            elif "category" in next:
+                print("Check for item word worked")
+                item = ItemListing.objects.get(id=item_id)
+                print(item.category.id)
+                category = Category.objects.get(pk=item.category.id)
+                category_list = ItemListing.objects.filter(category=category)
+                now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+                return render(request, "auctions/category.html", {
+                    "category": category,
+                    "now": now,
+                    "item_list": category_list,
+                    "bidForm": NewBidModel,
+                    "errorID": errorID,
+                    "errorForm": form,
+                })
             else:
                 return render(request, "auctions/index.html", {
                         "items": ItemListing.objects.all(),
@@ -481,7 +499,10 @@ def watch(request, item_id):
         profile = Profile.objects.get(owner=request.user)
         profile.watchlist.add(item)
         print("Success!!!")
-        return HttpResponseRedirect(reverse('index'))
+        print(request.GET)
+        next = request.POST.get('next')
+        print(next)
+        return HttpResponseRedirect(next)
 
 def unwatch(request, item_id):
     if request.method == "POST":
@@ -490,8 +511,10 @@ def unwatch(request, item_id):
         item = ItemListing.objects.get(pk=item_id)
         profile = Profile.objects.get(owner=request.user)
         profile.watchlist.remove(item)
-        print("Success!!!")
-        return HttpResponseRedirect(reverse('index'))
+        print(request.GET.get)
+        next = request.POST.get('next')
+        print(next)
+        return HttpResponseRedirect(next)
 
 def watchlist(request):
     now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))

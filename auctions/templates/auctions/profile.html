@@ -58,38 +58,69 @@
                 </div>
                 <div style="border-style: dotted; display: grid; grid-template-rows: 20% 55% 25%; background-color: crimson;">
                     <div style="border-style: dotted;">
-                        <h3>Last 5 Shots!</h3>
+                        <h3>Last 6 Shots!</h3>
                     </div>
                     <div style="border-style: dotted;">
-                        <ul style="list-style: none; margin-left: -5%;">
+                        <ul style="list-style: none; margin-left: -10%;">
                             {% for bid in item.get_last_6 %}
-                                <li><h6>£{{bid.bid}} From: {{bid.bidder.username}} on {{bid.bidPlaced|date:"d M Y G i"}}</h6></li>
+                                <li><h6>£{{bid.bid}} From: {{bid.bidder.username}} on {{bid.bidPlaced|date:"d M Y G:i"}}</h6></li>
                             {% endfor %}
                         </ul>
                     </div>
                     <div style="border-style: dotted; position: relative;">
-                        {% if request.user == item.seller and item.is_active %}
-                            <h3>No bid rigging!</h3>
-                            <form action="{% url 'close_item' item.id %}" method="post">
-                                {%csrf_token%}
-                                <button type="submit" style="position: absolute; top: 30%; left: 70%;">Close {{item.name}}</button>
-                            </form>
-                        {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
-                            <h3>You are the winner {{item.highestBid.bidder}}</h3>
-                        {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
-                            <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
-                        {% elif not item.seller == request.user and item.is_active %}
-                            <form style="margin-top: 5%; margin-left: 2%;" action="{% url 'new_bid' item.id %}" method="post">
-                                {% csrf_token %}
-                                {{ bidForm }}
-                                <input type="submit" value="Submit">
-                            </form>
+                    {% if user.is_authenticated %}
+                    {% if request.user == item.seller and item.is_active %}
+                        <h3>No bid rigging!</h3>
+                        <form action="{% url 'close_item' item.id %}" method="post">
+                            {%csrf_token%}
+                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Close {{item.name}}</button>
+                        </form>
+                    {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
+                        <h3>You are the winner {{item.highestBid.bidder}}</h3>
+                    {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
+                        <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
+                    {% elif not item.seller == request.user and item.is_active %}
+                        {% if errorForm %}
+                        <form action="{% url 'new_bid' item.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{item.id}}" name="id">
+                            <input type="hidden" value="{{request.path}}" name="next">
+                            <input type="hidden" value="index" name="page">
+                            {{ errorForm }}
+                            <input type="submit" value="Submit">
+                        </form>
+                        {% else %}
+                        <form action="{% url 'new_bid' item.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{item.id}}" name="id">
+                            <input type="hidden" value="{{request.path}}" name="next">
+                            <input type="hidden" value="index" name="page">
+                            {{ bidForm }}
+                            <input type="submit" value="Submit">
+                        </form>
                         {% endif %}
+                        {% if user.profile and item.is_active and request.user.profile not in item.watching.all %}
+                        <form action="{% url 'watch' item.id %}" method="post">
+                            {%csrf_token%}
+                            <input type="hidden" value="{{request.path}}" name="next">
+                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
+                        </form>
+                        {% elif user.profile and request.user.profile in item.watching.all %}
+                        <form action="{% url 'unwatch' item.id %}" method="post">
+                            <input type="hidden" value="{{request.path}}" name="next">
+                            {%csrf_token%}
+                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
+                        </form>
+                        {% endif %}
+                        {% endif %}
+                    {% else %}
+                    <h3>No Bid Rigging!</h3>
+                    {% endif %}
                     </div>
                 </div>
             </div>    
         </li>
-        {% endfor%}
+        {% endfor %}
     </ul>
 </div>
 <div style="border: dotted; border-color: blue; width: 80%; min-width: 1500px; padding-top: 50px; margin: auto; display: grid; grid-template-columns: 65% 35%;">

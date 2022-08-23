@@ -76,6 +76,7 @@
                             </form>
                             <form action="{% url 'unwatch' item.id %}" method="post">
                                 {%csrf_token%}
+                                <input type="hidden" value="{{request.path}}" name="next">
                                 <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
                             </form>
                         {% endif %}

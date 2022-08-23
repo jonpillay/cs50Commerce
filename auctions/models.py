@@ -32,7 +32,7 @@ class ItemListing(models.Model):
     auctionStart = models.DateTimeField(null=True, blank=True)
     auctionEnd = models.DateTimeField(null=True, blank=True)
     startingBid = models.DecimalField(null=True, blank=True, max_digits=128, decimal_places=2)
-    """bids = models.ForeignKey('Bid', on_delete=models.DO_NOTHING, related_name="item")"""
+    #bids = models.ForeignKey('Bid', on_delete=models.DO_NOTHING, related_name="item")
     highestBid = models.ForeignKey('Bid', null=True, blank=True, on_delete=models.DO_NOTHING, default=None)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="items", default=None)
 
