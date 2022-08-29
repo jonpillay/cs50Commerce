@@ -1,3 +1,243 @@
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch&display=swap');
+
 body {
     padding: 10px;
+    font-family: Product Sans,sans-serif;
+}
+
+.title {
+    font-family: 'Silkscreen', cursive;
+    font-size: 145%;
+    font-weight: 600;
+    margin-top: 100px;
+}
+
+#g-blue{ color:#4285F4; }
+#g-red{ color:#DB4437; }
+#g-yellow{ color:#F4B400; }
+#g-green{ color:#0F9D58; }
+
+.nav-link {
+    font-family: Product Sans,sans-serif;
+}
+
+#header-search {
+    font-family: Product Sans,sans-serif;
+    border-radius: 11px;
+    margin-top: 2.5px;
+}
+
+.page-title {
+    font-family: 'Silkscreen', cursive;
+    font-size: 200%;
+    margin-left: 10px;
+    opacity: 95%;
+}
+
+#profile-items-title {
+    font-size: 300%;
+    margin-left: 0px;
+}
+
+.index-listing {
+    display: grid;
+    grid-template-columns: 18% 57% 25%;
+    height: 300px; 
+    margin-bottom: 65px;
+}
+
+.listing-image-box {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.listing-image {
+    max-width: 90%;
+    max-height: 400px;
+}
+
+.item-title {
+    color: #DB4437;
+}
+
+.listing-header {
+    display: grid; 
+    grid-template-columns: 33% 32% 35%; 
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    color: #DB4437;
+    padding: 5px;
+}
+
+#item-header {
+    padding-top: 15px;
+    grid-template-columns: 50% 50%;
+}
+
+#head-cat-index {
+    margin-top: 4px;
+}
+
+.counter {
+    font-weight: 600;
+    font-size: x-large;
+    color: blue;
+    opacity: 85%;
+}
+
+#item-counter {
+    padding-top: 18px;
+    padding-right: 4px;
+}
+
+.info-box {
+    display: grid;
+    grid-template-rows: 15% 70% 15%;
+    max-width: 820px;
+    
+}
+
+.listing-description {
+    font-size: 16px;
+    padding: 10px;
+    font-family: 'Chakra Petch', sans-serif;
+    background-color:#2ac57a;
+    border-radius: 4px;
+    opacity: 93%;
+}
+
+#item-description {
+    margin: 15px;
+    margin-left: -25px;
+}
+
+.description-text {
+    opacity: 95%;
+}
+
+.listing-status {
+    display: grid;
+    grid-template-columns: 70% 30%;
+    padding: 5px;
+    margin-top: -5px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.cur-win {
+    color: #3f37db;
+}
+
+.price-win {
+    color: #fc24d8;
+}
+
+#index-seller {
+    float: right;
+    padding-right: 5px;
+    padding-top: 4px;
+}
+
+.listing-bid {
+    display: grid;
+    grid-template-rows: 17% 58% 25%;
+    background-color: rgb(255, 80, 80);
+    border-radius: 2%;
+    padding: 7px;
+    opacity: 90%;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+#item-bid {
+    display: grid;
+    grid-template-rows: 15% 75% 10%;
+    padding: 8px;
+}
+
+#item-past {
+    padding-top: 3px;
+    font-size: large;
+    margin-bottom: 7px;
+    margin-left: -4px;
+    opacity: 95%;
+}
+
+.rig-warn {
+    margin-top: 7%;
+}
+
+.index-bid {
+    padding-top: 25px;
+}
+
+.no-bid-box {
+    display: grid;
+    grid-template-columns: 70% 30%;
+}
+
+.bid-box {
+    display: grid;
+    grid-template-columns: 80% 20%;
+}
+
+/* Item Discussion */
+
+.discussion-box {
+    padding-top: 20px;
+    width: 80%;
+    min-width: 1500px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 65% 35%;
+    font-family: 'Chakra Petch', sans-serif;
+}
+
+.discussion-title {
+    padding: 10px;
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: 800;
+    opacity: 90%;
+}
+
+#comment-prompt {
+    font-weight: bold;
+    opacity: 98%;
+}
+
+.comment-box {
+    display: grid;
+    grid-template-rows: 25% 75%;
+    height: 200px;
+    width: 90%;
+    margin: auto -1%;
+    opacity: 95%;
+    font-family: 'Chakra Petch', sans-serif;
+}
+
+/* Profile */
+
+.profile-info {
+    display: grid;
+    grid-template-rows: 50% 50%;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+#profile-name {
+    font-size: 300%;
+    padding-left: 5px;
+}
+
+#profile-about-me {
+    font-family: 'Chakra Petch', sans-serif;
+    padding: 10px;
+}
+
+.profile-box {
+    display: grid;
+    grid-template-rows: auto auto;
+    width: 80%;
+    height: auto;
+    margin:auto;
+    min-width: 1540px;
 }
