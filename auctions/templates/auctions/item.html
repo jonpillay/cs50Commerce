@@ -2,30 +2,40 @@
 {% load static %}
 {% load tz %}
 
+
+
 {% block body %}
 
-<div class="w3-container" style="display: grid; grid-template-rows: 15% 85%; border-style: dotted; width: 80%; height: 450px; margin:auto; min-width: 1540px;" id="listing">
-    <div style="border-style: dotted; width: 100%; height:auto">
-        <h1>{{item.name}} for sale from <a href="{% url 'profile' item.seller.id %}">{{item.seller.username}}</a><span style="float: right;">{% if item.auctionStart >= now %}<h3>Going Live on {{item.auctionStart|localtime}}</h3>
-            {% elif now > item.auctionEnd %}<h3>Auction Ended on {{item.auctionEnd|localtime}}</h3>
-            {% else %}<div class="counter" style="font-weight: 750; font-size: 60%; text-align: justify; color: blue;" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}</span></h1>
-    </div>
-    <div style="display: grid; grid-template-columns: 25% 50% 25%; border-style: dotted;">
+<div class="w3-container" style="display: grid; grid-template-rows: 15% 85%; width: 80%; height: 450px; margin:auto; min-width: 1540px;">
+    <div class="listing-header" id="item-header">
         <div>
-            <img style="height: 375px;" src="{{item.img.url}}" alt="You Fucked Up">
+            <h1 class="item-name">{{item.name}} for sale from <a href="{% url 'profile' item.seller.id %}">{{item.seller.username}}</a>
         </div>
-        <div style="background-color: lawngreen;">
-            <h4>{{item.description}}</h4>
+        <div>
+            <span style="float: right;">{% if item.auctionStart >= now %}<h3>Going Live on {{item.auctionStart|localtime}}</h3>
+            {% elif now > item.auctionEnd %}<h3>Auction Ended on {{item.auctionEnd|localtime}}</h3>
+            {% else %}<div class="counter" id="item-counter" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}</span></h1>
         </div>
-        <div style="border-style: dotted; display: grid; grid-template-rows: 75% 25%; background-color: crimson;">
-            <div style="border-style: dotted;">
-                <ul style="list-style: none; margin-left: -5%;">
+    </div>
+    <div style="display: grid; grid-template-columns: 25% 50% 25%;">
+        <div class="listing-image-box">
+            <img class="listing-image" src="{{item.img.url}}" alt="You Fucked Up">
+        </div>
+        <div class="listing-description" id="item-description">
+            <h4 class="description-text">{{item.description}}</h4>
+        </div>
+        <div class="listing-bid" id="item-bid">
+            <div>
+                <h2>Past Bids (The Competition):</h2>
+            </div>
+            <div>
+                <ul style="list-style: none; line-height-step: 3px; margin-left: -5%;">
                     {% for bid in item.get_last_6 %}
-                        <li><h6>£{{bid.bid}} From: {{bid.bidder.username}} on {{bid.bidPlaced|date:"d M Y G i"}}</h6></li>
+                        <li id="item-past">£{{bid.bid}} From: {{bid.bidder.username}} on {{bid.bidPlaced|date:"d M Y G i"}}</li>
                     {% endfor %}
                 </ul>
             </div>
-            <div style="border-style: dotted; position: relative;">
+            <div style="position: relative;">
                 {% if user.is_authenticated %}
                     {% if request.user == item.seller and item.is_active %}
                         <h3>No bid rigging!</h3>
@@ -36,7 +46,11 @@
                     {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
                         <h3>You are the winner {{item.highestBid.bidder}}</h3>
                     {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
-                        <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
+                        {% if item.highestBid == None %}
+                            <h3>No Bids, No Winner!</h3>
+                        {% else %}
+                            <h4>Lot Closed: Winner {{item.highestBid.bidder}}</h4>
+                        {% endif %}
                     {% elif not item.seller == request.user and item.is_active %}
                         {% if errorForm %}
                         <form action="{% url 'new_bid' item.id %}" method="post">
@@ -60,13 +74,13 @@
                         <form action="{% url 'watch' item.id %}" method="post">
                             {%csrf_token%}
                             <input type="hidden" value="{{request.path}}" name="next">
-                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
+                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch</button>
                         </form>
                         {% elif user.profile and request.user.profile in item.watching.all %}
                         <form action="{% url 'unwatch' item.id %}" method="post">
                             <input type="hidden" value="{{request.path}}" name="next">
                             {%csrf_token%}
-                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
+                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch</button>
                         </form>
                         {% endif %}
                         {% endif %}
@@ -78,19 +92,21 @@
         </div>
     </div>
 </div>
-<div style="border: dotted; border-color: blue; width: 80%; min-width: 1500px; margin: auto; display: grid; grid-template-columns: 65% 35%;">
+<div class="discussion-box">
     <div>
-        <h1 style="padding: 10px;">Item Discussion</h1>
+        <h1 class="discussion-title">Item Discussion</h1>
         <ul style="list-style: none;">
         {% for comment in item.itemComments.all %}
         <li>
-            <div style="display: grid; grid-template-rows: 25% 75%; border: dotted; height: 200px; width: 90%; margin: auto -1%;">
+            <div class="comment-box">
                 <div style="padding-top: 3px;">
                     <img src="{{comment.commentter.profile.profile_pic.url}}" style="display: inline; clip-path: circle(); max-height: 100%; max-width: 100%;" alt="No Profile Pic">
                     <h5 style="display: inline;">{{comment.commentter.username}} left a review:</h5>
                 </div>
-                <div style="padding-left: 20px; padding-top: 5px;">
-                    {{comment.comment}}
+                <div style="padding-left: 20px; padding-top: 15px;">
+                    <div>
+                        {{comment.comment}}
+                    </div>
                 </div>
             </div>
         </li>        
@@ -98,8 +114,8 @@
         </ul>
     </div>
     <div>
-        <div style="padding: 10px;">
-            <h3>Talk about {{item.name}} from Seller: {{item.seller.username}}</h3>
+        <div style="padding-top: 30px;">
+            <h3 id="comment-prompt">Talk about {{item.name}} from Seller: {{item.seller.username}}</h3>
             <form action="{% url 'new_item_comment' item_id=item.id %}" method="post" style="width: 100%; padding: 12px 20px; margin: 8px 0; box-sizing: border-box;">
                 {%csrf_token%}
                 {{commentForm.as_p}}

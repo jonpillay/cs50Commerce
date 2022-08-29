@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block body %}
-<h1>Something to Flog?</h1>
+<h3 id="page-title">Something to Flog?</h3>
 <form action="{% url 'new_listing' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}

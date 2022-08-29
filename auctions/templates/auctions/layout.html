@@ -6,10 +6,10 @@
         <title>{% block title %}Auctions{% endblock %}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
-        <script src="{% static 'auctions/auctions.js' %}"></script>   
+        <script src="{% static 'auctions/auctions.js' %}"></script>  
     </head>
     <body>
-        <h1>Auctions</h1>
+        <h1><strong><span class ='title'><span id="g-blue">F</span><span id="g-red">r</span><span id="g-yellow">o</span><span id="g-green">o</span><span id="g-blue">g</span><span id="g-red">l</span><span id="g-yellow">e</span></strong></h1>
         <div>
             {% if user.is_authenticated %}
                 Signed in as <strong>{{ user.username }}</strong>.
@@ -51,7 +51,7 @@
                     <a class="nav-link" href="{% url 'register' %}">Register</a>
                 </li>
             {% endif %}
-            <li>
+            <li class="mx-auto order-0" id="header-search">
                 <form action="{% url 'index' %}" method="post">
                     {% csrf_token %}
                     {{searchform}}

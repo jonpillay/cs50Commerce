@@ -22,7 +22,8 @@ from .models import User
 from .utils import *
 
 class SearchForm(forms.Form):
-    search = forms.CharField()
+    search = forms.CharField(widget=forms.TextInput(attrs={'id':'header-search'}))
+    #name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Name', 'style': 'width: 300px;'}))
 
 def index(request):
     if request.method == 'POST':
