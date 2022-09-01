@@ -56,7 +56,7 @@ body {
 
 .listing-image {
     max-width: 90%;
-    max-height: 400px;
+    max-height: 350px;
 }
 
 .item-title {
@@ -65,7 +65,7 @@ body {
 
 .listing-header {
     display: grid; 
-    grid-template-columns: 33% 32% 35%; 
+    grid-template-columns: 40% 25% 35%; 
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     color: #DB4437;
     padding: 5px;
@@ -73,6 +73,7 @@ body {
 
 #item-header {
     padding-top: 15px;
+    margin-bottom: 30px;
     grid-template-columns: 50% 50%;
 }
 
@@ -86,6 +87,17 @@ body {
     color: blue;
     opacity: 85%;
 }
+
+#index-counter {
+    padding-top: 7px;
+    font-size: 17px;
+}
+
+#profile-counter {
+    padding-top: 8px;
+    font-size: 18px;
+}
+
 
 #item-counter {
     padding-top: 18px;
@@ -114,7 +126,7 @@ body {
 }
 
 .description-text {
-    opacity: 95%;
+    opacity: 93%;
 }
 
 .listing-status {
@@ -150,6 +162,7 @@ body {
 }
 
 #item-bid {
+    margin-top: 7px;
     display: grid;
     grid-template-rows: 15% 75% 10%;
     padding: 8px;
@@ -160,6 +173,13 @@ body {
     font-size: large;
     margin-bottom: 7px;
     margin-left: -4px;
+    opacity: 95%;
+}
+
+.watch-close-button {
+    position: absolute;
+    top: 1%;
+    left: 75%;
     opacity: 95%;
 }
 

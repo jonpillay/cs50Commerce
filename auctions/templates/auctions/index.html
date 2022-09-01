@@ -28,7 +28,7 @@
                             <a>
                                 {% if item.going_live %}<h3>Going Live on {{item.auctionStart|localtime}}</h3>
                                 {% elif item.has_ended %}<h3>Auction Ended on {{item.auctionEnd|localtime}}</h3>
-                                {% else %}<div class="counter" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}
+                                {% else %}<div class="counter" id="index-counter" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}
                             </a>      
                         </div>
                     </div>

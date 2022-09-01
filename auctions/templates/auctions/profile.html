@@ -40,7 +40,7 @@
                         <div style="font-size: 6px; margin-left: auto; padding-left: -3%;">
                             {% if item.going_live %}<h5>Going Live {{item.auctionStart|localtime}}</h5>
                             {% elif item.has_ended %}<h5>Ended on {{item.auctionEnd|localtime}}</h5>
-                            {% else %}<div class="counter" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}    
+                            {% else %}<div class="counter" id="profile-counter" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}    
                         </div>
                     </div>
                     <div class="listing-description">
@@ -78,7 +78,7 @@
                                     <div>
                                         <form action="{% url 'close_item' item.id %}" method="post">
                                             {%csrf_token%}
-                                            <button style="margin-top: 19px;" type="submit">Close Item</button>
+                                            <button style="margin-top: 19px;" type="submit">Close</button>
                                         </form>
                                     </div>
                                 </div>

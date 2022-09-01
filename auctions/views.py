@@ -215,7 +215,7 @@ def profile(request, user_id):
             "profile": profile,
             "now": now,
             "commentForm": CommentForm,
-            "bidForm": NewBidForm, 
+            "bidForm": NewBidModel, 
         })
 
 class NewListingForm (forms.Form):
@@ -381,12 +381,10 @@ def new_bid(request, item_id):
                         print("this " + obj.bidItem.name)
                         bidItem.highestBid = obj
                         bidItem.save(update_fields=['highestBid'])
-                        next = request.POST.get('page', '/')
-                        if 'item' in next:
-                            print(next)
-                            return HttpResponseRedirect(reverse(next, args=[item_id]))
-                        else:
-                            return HttpResponseRedirect(reverse(next))
+                        next = request.POST.get('next')
+                        print("WE ARE HERE AUGUST 2022")
+                        next = request.POST.get('next')
+                        return HttpResponseRedirect(request.POST.get('next'))
                 else:
                     if bid > bidItem.highestBid.bid:
                         obj = Bid.objects.create(
@@ -395,23 +393,11 @@ def new_bid(request, item_id):
                             bidItem = bidItem
                         )
                         obj.save()
-                        bidList = Bid.objects.filter(bidItem=bidItem)
-                        print(bidList)
                         bidItem.bids.add(obj)
-                        bidList = Bid.objects.filter(bidItem=bidItem)
-                        print(bidList)
                         bidItem.highestBid = obj
                         bidItem.save(update_fields=['highestBid'])
-                        print("Got this far with the bug")
-                        print(request.POST)
-                        next = request.POST.get('page', '/')
-                        if 'item' in next:
-                            print(next)
-                            return HttpResponseRedirect(reverse(next, args=[item_id]))
-                        elif "category" in next:
-                            return HttpResponseRedirect(reverse(next, args=[bidItem.category.id]))
-                        else:
-                            return HttpResponseRedirect(reverse(next))
+                        next = request.POST.get('next')
+                        return HttpResponseRedirect(request.POST.get('next'))
                     else:
                         now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
                         return render(request, "auctions/index.html", {
@@ -424,10 +410,7 @@ def new_bid(request, item_id):
                 print("item is_active check working")
                 return HttpResponseRedirect(reverse("index"))
         else:
-            print("Why the fuck is next not updating?")
             next = request.POST.get('page', '/')
-            print(request.POST)
-            print("this is next the python variable" + next)
             errorID = item_id
             now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
             if "item" in next:
