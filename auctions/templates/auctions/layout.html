@@ -10,6 +10,7 @@
     </head>
     <body>
         <h1><strong><span class ='title'><span id="g-blue">F</span><span id="g-red">r</span><span id="g-yellow">o</span><span id="g-green">o</span><span id="g-blue">g</span><span id="g-red">l</span><span id="g-yellow">e</span></strong></h1>
+        <div class="tagline">{{tagline}}</div>
         <div>
             {% if user.is_authenticated %}
                 Signed in as <strong>{{ user.username }}</strong>.
@@ -52,7 +53,7 @@
                 </li>
             {% endif %}
             <li class="mx-auto order-0" id="header-search">
-                <form action="{% url 'index' %}" method="post">
+                <form action="{% url 'search' %}" method="post">
                     {% csrf_token %}
                     {{searchform}}
                 </form>

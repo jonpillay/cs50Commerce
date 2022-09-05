@@ -1,5 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch&family=Silkscreen:wght@700&family=Special+Elite&display=swap');
+
+/* special-elite-regular - latin */
+@font-face {
+    font-family: 'Special Elite';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/special-elite-v18-latin-regular.eot'); /* IE9 Compat Modes */
+    src: local(''),
+         url('../fonts/special-elite-v18-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('../fonts/special-elite-v18-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+         url('../fonts/special-elite-v18-latin-regular.woff') format('woff'), /* Modern Browsers */
+         url('../fonts/special-elite-v18-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+         url('../fonts/special-elite-v18-latin-regular.svg#SpecialElite') format('svg'); /* Legacy iOS */
+  }
+
 
 body {
     padding: 10px;
@@ -25,12 +39,11 @@ body {
 #header-search {
     font-family: Product Sans,sans-serif;
     border-radius: 11px;
-    margin-top: 2.5px;
+    margin-top: 3px;
 }
 
 .page-title {
     font-family: 'Silkscreen', cursive;
-    font-size: 200%;
     margin-left: 10px;
     opacity: 95%;
 }
@@ -65,7 +78,15 @@ body {
 
 .listing-header {
     display: grid; 
-    grid-template-columns: 40% 25% 35%; 
+    grid-template-columns: 30% 27% 43%; 
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    color: #DB4437;
+    padding: 5px;
+}
+
+.listing-header-small {
+    display: grid; 
+    grid-template-columns: 32% 30% 38%; 
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     color: #DB4437;
     padding: 5px;
@@ -83,19 +104,23 @@ body {
 
 .counter {
     font-weight: 600;
-    font-size: x-large;
+    font-size: 20px;
     color: blue;
     opacity: 85%;
+    padding-top: 5px;
 }
 
-#index-counter {
-    padding-top: 7px;
-    font-size: 17px;
+.tagline {
+    font-family: 'Special Elite', cursive;
+    font-size: 20px;
+    margin-top: -10px;
+    margin-left: 8px;
+    margin-bottom: 5px;
 }
 
-#profile-counter {
-    padding-top: 8px;
+#small-status {
     font-size: 18px;
+    padding-top: 9px;
 }
 
 
@@ -157,7 +182,7 @@ body {
     background-color: rgb(255, 80, 80);
     border-radius: 2%;
     padding: 7px;
-    opacity: 90%;
+    opacity: 95%;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
@@ -173,6 +198,11 @@ body {
     font-size: large;
     margin-bottom: 7px;
     margin-left: -4px;
+    opacity: 95%;
+}
+
+.watch-button {
+    margin-top: 25px;
     opacity: 95%;
 }
 
@@ -260,4 +290,12 @@ body {
     height: auto;
     margin:auto;
     min-width: 1540px;
+}
+
+/* categories */
+
+.cat-list {
+    list-style: none;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: xx-large;
 }

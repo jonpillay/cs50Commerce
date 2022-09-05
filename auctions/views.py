@@ -20,12 +20,23 @@ from PIL import Image
 from .models import *
 from .models import User
 from .utils import *
+from random import *
 
 class SearchForm(forms.Form):
     search = forms.CharField(widget=forms.TextInput(attrs={'id':'header-search'}))
     #name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Name', 'style': 'width: 300px;'}))
 
 def index(request):
+    now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+    form = NewBidModel
+    return render(request, "auctions/index.html", {
+        "items": ItemListing.objects.all(),
+        "now": now,
+        "bidForm": form,
+        "searchform": SearchForm
+    })
+
+def search(request):
     if request.method == 'POST':
         search = SearchForm(request.POST)
         if search.is_valid():
@@ -47,15 +58,6 @@ def index(request):
                 return render(request, "auctions/not-found.html", {
                         "word": word.capitalize(),
                 })
-    now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
-    form = NewBidModel
-    return render(request, "auctions/index.html", {
-        "items": ItemListing.objects.all(),
-        "now": now,
-        "bidForm": form,
-        "searchform": SearchForm
-    })
-
 
 def login_view(request):
     if request.method == "POST":
@@ -512,5 +514,5 @@ def watchlist(request):
         "message": message,
         "watchlist": watchlist,
         "now": now,
-        "bidForm": NewBidForm,
+        "bidForm": NewBidModel,
     })

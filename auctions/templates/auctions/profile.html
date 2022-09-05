@@ -30,7 +30,7 @@
                     <img class="listing-image" src="{{item.img.url}}" alt="You Fucked Up">
                 </div>
                 <div class="info-box">
-                    <div class="listing-header">
+                    <div class="listing-header-small">
                         <div>
                             <h3 class="for-sale">For Sale: <a href="{% url 'item' item.id %}">{{item.name}}</a></h3>
                         </div>   
@@ -40,7 +40,7 @@
                         <div style="font-size: 6px; margin-left: auto; padding-left: -3%;">
                             {% if item.going_live %}<h5>Going Live {{item.auctionStart|localtime}}</h5>
                             {% elif item.has_ended %}<h5>Ended on {{item.auctionEnd|localtime}}</h5>
-                            {% else %}<div class="counter" id="profile-counter" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}    
+                            {% else %}<div class="counter" id="small-status" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}    
                         </div>
                     </div>
                     <div class="listing-description">
@@ -142,19 +142,21 @@
         {% endfor %}
     </ul>
 </div>
-<div style="width: 80%; min-width: 1500px; padding-top: 50px; margin: auto; display: grid; grid-template-columns: 65% 35%;">
+<div class="discussion-box">
     <div>
-        <h1 style="padding: 10px;">Seller Reviews</h1>
+        <h1 class="discussion-title">Seller Reviews</h1>
         <ul style="list-style: none;">
         {% for comment in profile.profileComments.all %}
         <li>
-            <div style="display: grid; grid-template-rows: 25% 75%; height: 200px; width: 90%; margin: auto -1%;">
+            <div class="comment-box">
                 <div style="padding-top: 3px;">
                     <img src="{{comment.commentter.profile.profile_pic.url}}" style="display: inline; clip-path: circle(); max-height: 100%; max-width: 100%;" alt="No Profile Pic">
                     <h5 style="display: inline;">{{comment.commentter.username}} left a review:</h5>
                 </div>
-                <div style="padding-left: 20px; padding-top: 5px;">
-                    {{comment.comment}}
+                <div style="padding-left: 20px; padding-top: 15px;">
+                    <div>
+                        {{comment.comment}}
+                    </div>
                 </div>
             </div>
         </li>        
@@ -162,8 +164,7 @@
         </ul>
     </div>
     <div>
-        {% if not request.user == profile.owner %}
-        <div style="padding: 10px;">
+        <div style="padding-top: 30px;">
             <h3>Leave Review for {{profile.first}} {{profile.lasts}}</h3>
             <form action="{% url 'new_profile_comment' profile_id=profile.id %}" method="post" style="width: 100%; padding: 12px 20px; margin: 8px 0; box-sizing: border-box;">
                 {%csrf_token%}
@@ -171,9 +172,6 @@
                 <input type="submit">
             </form>
         </div>
-        {% endif %}
     </div>
 </div>
-
-
-{% endblock%}
+{% endblock %}

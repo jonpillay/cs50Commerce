@@ -11,6 +11,7 @@ from PIL import Image
 import datetime
 import pytz
 from django.db.models.query_utils import DeferredAttribute
+from random import *
 
 from django.utils import timezone
 import time
@@ -20,10 +21,17 @@ class User(AbstractUser):
     pass
 
 class Category(models.Model):
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=15)
 
     def __str__(self):
         return self.name
+
+class Taglines(models.Model):
+    tagLine = models.CharField(max_length=25)
+
+    def __str__(self):
+        return self.tagLine
+
 class ItemListing(models.Model):
     seller = models.ForeignKey(User, default=1, on_delete=models.CASCADE, related_name="saleItems")
     name = models.CharField(max_length=64)

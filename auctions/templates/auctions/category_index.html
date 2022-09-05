@@ -4,10 +4,11 @@
 
 {% block body %}
 
-<div class="w3-container" style="display: grid; grid-template-rows: 15% 85%; border-style: dotted; width: 80%; height: 450px; margin:auto; min-width: 1540px;" id="listing">
+<div class="w3-container" style="display: grid; grid-template-rows: 15% 85%; width: 80%; height: 450px; margin:auto; min-width: 1540px;" id="listing">
+    <h2 class="page-title">Categories</h2>
     <ul>
         {% for category in categories %}
-        <li><a href="{% url 'category' category.id %}">{{category}}</a></li>
+        <li class="cat-list"><a href="{% url 'category' category.id %}">{{category}}</a></li>
         {% endfor %}
     </ul>
 </div>

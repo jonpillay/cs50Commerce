@@ -3,53 +3,51 @@
 {% load tz %}
 
 {% block body %}
-    <div class="w3-container" style="border-style: dotted; min-width: 1540px;">
-    <h1 style="display: inline-block;">{{category}}</h1>
+    <div class="w3-container" style="max-width: 1500px;">
+    <h1 class="page-title">Emporium of {{category}}</h1>
     {% if message %}
         <h3 style="display: inline; float: right; margin-right: 10%;">{{ message }}!!!</h3>
     {% endif %}
     <ul style="list-style: none; margin-left: -1%;">
     {% for item in item_list %}
-        {% if item.is_active %}
         <li>
-            <div style="display: grid; grid-template-columns: 18% 57% 25%; height: 300px;" id="listing">
-                <div style="border-style: dotted;">
-                    <img style="max-height: 298px; margin-right: 3px;" src="{{item.img.url}}" alt="You Fucked Up">
+            <div class="index-listing">
+                <div class="listing-image-box">
+                    <img class="listing-image" src="{{item.img.url}}" alt="You Fucked Up">
                 </div>
-                <div style="display: grid; grid-template-rows: 20% 60% 20%;">
-                    <div style="border-style: dotted; background-color: lawngreen;">
-                        <ul class="nav">
-                            <li class="nav-item">
-                                <h3 class="nav-link">For Sale: <a href="{% url 'item' item.id %}">{{item.name}}</a></h3>
-                            </li>    
-                            <li class="nav-item">
-                                <h3 class="nav-link">Seller: <a href="{% url 'profile' item.seller.id %}"> {{item.seller.username}}</a></h3>
-                            </li>
-                            <li class="nav-item" style="margin-left: auto;">
-                                <a class="nav-link">
-                                    {% if item.going_live %}<h3>Going Live on {{item.auctionStart|localtime}}</h3>
-                                    {% elif item.has_ended %}<h3>Auction Ended on {{item.auctionEnd|localtime}}</h3>
-                                    {% else %}<div class="counter" style="font-weight: 800; font-size: 100%; text-align: justify; color: blue;" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}
-                                </a>      
-                            </li>
-                        </ul>
+                <div class="info-box">
+                    <div class="listing-header-small">
+                        <div>
+                            <h3 class="for-sale">For Sale: <a href="{% url 'item' item.id %}">{{item.name}}</a></h3>
+                        </div>   
+                        <div>
+                            <h4 id="head-cat-index">Category: <a href="{% url 'category' item.category.id %}">{{item.category}}</a></h4>
+                        </div>
+                        <div style="margin-left: auto; padding-left: -3%;">
+                            <a>
+                                {% if item.going_live %}<h3 id="small-status">Going Live on {{item.auctionStart|localtime}}</h3>
+                                {% elif item.has_ended %}<h3 id="small-status">Auction Ended on {{item.auctionEnd|localtime}}</h3>
+                                {% else %}<div class="counter" id="small-status" data-enddate="{{item.auctionEnd.isoformat}}"></div>{% endif %}
+                            </a>      
+                        </div>
                     </div>
-                    <div style="border-style: dotted; background-color: lightcoral;">
+                    <div class="listing-description">
                         <h5>{{item.description}}</h5>
                     </div>
-                    <div style="background-color: blue;">
-                        <ul class="nav">
-                            <li class="nav-item">
-                                <a class="nav-link"><h3>{% if item.highestBid %} Current Winner: {{item.highestBid.bidder.username}} With £{{item.highestBid.bid }} {% else %}Starting Bid {{item.startingBid}} {% endif %}</h3></a>
-                            </li>
-                        </ul>
+                    <div class="listing-status">
+                        <div>
+                            <h3 class="cur-win">{% if item.highestBid %} Current Winner: {{item.highestBid.bidder.username}} with <span class="price-win">£{{item.highestBid.bid }}</span> {% else %}Starting Bid {{item.startingBid}} {% endif %}</h3>
+                        </div>
+                        <div>
+                            <h4 id="index-seller">Seller: <a href="{% url 'profile' item.seller.id %}"> {{item.seller.username}}</a></h4>
+                        </div>
                     </div>
                 </div>
-                <div style="border-style: dotted; display: grid; grid-template-rows: 20% 55% 25%; background-color: crimson;">
-                    <div style="border-style: dotted;">
-                        <h3>Last 6 Shots!</h3>
+                <div class="listing-bid">
+                    <div>
+                        <h3>Past Bids (The Competition):</h3>
                     </div>
-                    <div style="border-style: dotted;">
+                    <div class="bid-history">
                         {% if item.is_active %}
                         <ul style="list-style: none; margin-left: -5%;">
                             {% for bid in item.get_last_6 %}
@@ -58,52 +56,69 @@
                         </ul>
                         {% endif %}
                     </div>
-                    <div style="border-style: dotted; position: relative;">
+                    <div>
                         {% if user.is_authenticated %}
                             {% if request.user == item.seller and item.is_active %}
-                                <h3>No bid rigging!</h3>
-                                <form action="{% url 'close_item' item.id %}" method="post">
-                                    {%csrf_token%}
-                                    <button type="submit" style="position: absolute; top: 30%; left: 75%;">Close {{item.name}}</button>
-                                </form>
+                                <div class="no-bid-box">
+                                    <div>
+                                        <h3 class="rig-warn">No bid rigging!</h3>
+                                    </div>
+                                    <div>
+                                        <form action="{% url 'close_item' item.id %}" method="post">
+                                            {%csrf_token%}
+                                            <button style="margin-top: 19px;" type="submit">Close Item</button>
+                                        </form>
+                                    </div>
+                                </div>
                             {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
                                 <h3>You are the winner {{item.highestBid.bidder}}</h3>
                             {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
                                 <h3>Lot Closed: Winner {{item.highestBid.bidder}}</h3>
                             {% elif not item.seller == request.user and item.is_active %}
+                                <div class="bid-box">
                                 {% if item.id == errorID %}
-                                <form action="{% url 'new_bid' item.id %}" method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" value="{{item.id}}" name="id">
-                                    <input type="hidden" value="{{request.path}}" name="next">
-                                    <input type="hidden" value="category" name="page">
-                                    {{ errorForm }}
-                                    <input type="submit" value="Submit">
-                                </form>
+                                <div>
+                                    <form action="{% url 'new_bid' item.id %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{item.id}}" name="id">
+                                        <input type="hidden" value="{{request.path}}" name="next">
+                                        <input type="hidden" value="index" name="page">
+                                        {{ errorForm }}
+                                        <input type="submit" value="Submit">
+                                    </form>
+                                </div>
                                 {% else %}
-                                <form action="{% url 'new_bid' item.id %}" method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" value="{{item.id}}" name="id">
-                                    <input type="hidden" value="{{request.path}}" name="next">
-                                    <input type="hidden" value="category" name="page">
-                                    {{ bidForm }}
-                                    <input type="submit" value="Submit">
-                                </form>   
-                                {% endif %}                         
-                                    {% if user.profile and request.user.profile not in item.watching.all %}
-                                        <form action="{% url 'watch' item.id %}" method="post">
-                                            {%csrf_token%}
-                                            <input type="hidden" value="{{request.path}}" name="next">
-                                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Watch {{item.name}}</button>
-                                        </form>
-                                    {% elif user.profile and request.user.profile in item.watching.all %}
-                                        <form action="{% url 'unwatch' item.id %}" method="post">
-                                            {%csrf_token%}
-                                            <input type="hidden" value="{{request.path}}" name="next">
-                                            <button type="submit" style="position: absolute; top: 30%; left: 75%;">Unwatch {{item.name}}</button>
-                                        </form>
-                                    {% endif %}
-                            
+                                <div>
+                                    <form class="index-bid" action="{% url 'new_bid' item.id %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{item.id}}" name="id">
+                                        <input type="hidden" value="{{request.path}}" name="next">
+                                        <input type="hidden" value="index" name="page">
+                                        {{ bidForm }}
+                                        <input type="submit" value="Submit">
+                                    </form>
+                                </div>
+                                {% if user.profile and request.user.profile not in item.watching.all %}
+                                <div>
+                                    <form action="{% url 'watch' item.id %}" method="post">
+                                        {%csrf_token%}
+                                        <input type="hidden" value="{{request.path}}" name="next">
+                                        <div>
+                                            <button style="margin-top: 25px;" type="submit">Watch</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                {% elif user.profile and request.user.profile in item.watching.all %}
+                                <div>
+                                    <form action="{% url 'unwatch' item.id %}" method="post">
+                                        {%csrf_token%}
+                                        <input type="hidden" value="{{request.path}}" name="next">
+                                        <button style="margin-top: 25px;" type="submit">Unwatch</button>
+                                    </form>
+                                </div>
+                                {% endif %}
+                                </div>
+                                {% endif %}
                             {% endif %}
                         {% else %}
                         <h3>Please Log In To Bid</h3>
@@ -112,7 +127,6 @@
                 </div>
             </div>    
         </li>
-        {% endif %}
     {% endfor %}
     </ul>
     </div>
