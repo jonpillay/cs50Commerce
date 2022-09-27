@@ -37,7 +37,7 @@ class ItemListing(models.Model):
     name = models.CharField(max_length=64)
     img = models.ImageField(upload_to ='images/')
     description = models.CharField(max_length=10000)
-    auctionStart = models.DateTimeField(null=True, blank=True)
+    auctionStart = models.DateTimeField(null=True, blank=True, default=timezone.now)
     auctionEnd = models.DateTimeField(null=True, blank=True)
     startingBid = models.DecimalField(null=True, blank=True, max_digits=128, decimal_places=2)
     #bids = models.ForeignKey('Bid', on_delete=models.DO_NOTHING, related_name="item")
@@ -124,7 +124,7 @@ class Bid(models.Model):
     bid = models.DecimalField(max_digits=16, decimal_places=2)
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
     bidItem = models.ForeignKey(ItemListing, related_name="bids", on_delete=models.CASCADE, blank=True, null=True)
-    bidPlaced = models.DateTimeField(default=datetime.datetime.now(datetime.timezone.utc))
+    bidPlaced = models.DateTimeField(default=timezone.now)
 
     """def highest_bid(self):
         highest = None

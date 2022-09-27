@@ -11,55 +11,57 @@
     <body>
         <h1><strong><span class ='title'><span id="g-blue">F</span><span id="g-red">r</span><span id="g-yellow">o</span><span id="g-green">o</span><span id="g-blue">g</span><span id="g-red">l</span><span id="g-yellow">e</span></strong></h1>
         <div class="tagline">{{tagline}}</div>
-        <div>
-            {% if user.is_authenticated %}
-                Signed in as <strong>{{ user.username }}</strong>.
-            {% else %}
-                Not signed in.
-            {% endif %}
-        </div>
-        <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'category_index' %}">Browse Categories</a>
-            </li>
-            {% if user.is_authenticated %}
+        <div id="header-font">
+            <div>
+                {% if user.is_authenticated %}
+                    Signed in as <strong>{{ user.username }}</strong>.
+                {% else %}
+                    Not signed in.
+                {% endif %}
+            </div>
+            <ul class="nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                    <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'new_listing' %}">New Listing</a>
+                    <a class="nav-link" href="{% url 'category_index' %}">Browse Categories</a>
                 </li>
-                {% if user.profile %}
+                {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'profile' user.id %}">Profile</a>
+                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'watching' %}">Watching</a>
+                        <a class="nav-link" href="{% url 'new_listing' %}">New Listing</a>
                     </li>
+                    {% if user.profile %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' user.id %}">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'watching' %}">Watching</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'create_profile' user.id %}">Create Profile</a>
+                        </li>
+                    {% endif %}
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'create_profile' user.id %}">Create Profile</a>
+                        <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
                     </li>
                 {% endif %}
-            {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                <li class="mx-auto order-0" id="header-search">
+                    <form action="{% url 'search' %}" method="post">
+                        {% csrf_token %}
+                        {{searchform}}
+                    </form>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'register' %}">Register</a>
-                </li>
-            {% endif %}
-            <li class="mx-auto order-0" id="header-search">
-                <form action="{% url 'search' %}" method="post">
-                    {% csrf_token %}
-                    {{searchform}}
-                </form>
-            </li>
-        </ul>
-        <hr>
+            </ul>
+        </div>
+        <hr style="margin-top: 5px;">
         {% block body %}
         {% endblock %}
     </body>

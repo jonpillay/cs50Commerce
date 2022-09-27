@@ -3,7 +3,7 @@
 {% load tz %}
 
 {% block body %}
-    <div class="w3-container" style="max-width: 1500px;">
+<div class="index-container">
     <h2 class="page-title">Active Listings</h2>
     {% if message %}
         <h3 style="display: inline; float: right; margin-right: 10%;">{{ message }}!!!</h3>
@@ -131,5 +131,5 @@
         {% endif %}
     {% endfor %}
     </ul>
-    </div>
+</div>
 {% endblock %}

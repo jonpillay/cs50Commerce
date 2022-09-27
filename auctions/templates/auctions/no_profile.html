@@ -3,7 +3,23 @@
 {% load static %}
 
 {% block body %}
-<h1>{{missing_profile.username}} has no profile! If you see them, tell them to create one.</h1>
-<br>
-<a href="{{ request.META.HTTP_REFERER }}">Click here</a> to return to previous page.
+{% if request.user != missing_profile %}
+<div class="centre-cont">
+    <h2 class="page-title">
+        <p>{{missing_profile.username}} has no profile!</p><p>If you see them, tell them to create one.</p>
+    </h2>
+    <span>
+        <a href="{{ request.META.HTTP_REFERER }}">Click here</a> to return to previous page.
+    </span>
+</div>
+{% else %}
+<div class="centre-cont">
+    <h2 class="page-title">
+        <p>{{request.user.username}} you have not made a profile!</p><p>To create one click <a href="{% url 'create_profile' request.user.id %}">here</a></p><p>OR</p>
+    </h2>
+    <span>
+        <a href="{{ request.META.HTTP_REFERER }}">Click here</a> to return to previous page.
+    </span>
+</div>
+{% endif %}
 {% endblock %}

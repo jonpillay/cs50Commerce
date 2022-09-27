@@ -11,8 +11,6 @@
         <div class="profile-info">
             <div>
                 <div id="profile-name">{{profile.first}} {{profile.lasts}}</div>
-                <br>
-                <h5>Bidding history and completed sales (to be implemented)</h5>
             </div>
             <div>
                 <h2 id="profile-about-me">About Me!</h2>
@@ -164,14 +162,18 @@
         </ul>
     </div>
     <div>
-        <div style="padding-top: 30px;">
-            <h3>Leave Review for {{profile.first}} {{profile.lasts}}</h3>
-            <form action="{% url 'new_profile_comment' profile_id=profile.id %}" method="post" style="width: 100%; padding: 12px 20px; margin: 8px 0; box-sizing: border-box;">
-                {%csrf_token%}
-                {{commentForm.as_p}}
-                <input type="submit">
-            </form>
-        </div>
+        {% if request.user.profile == None %}
+            <h2>Please Login to Bid</h2>
+        {% else %}
+            <div style="padding-top: 30px;">
+                <h3>Leave Review for {{profile.first}} {{profile.lasts}}</h3>
+                <form action="{% url 'new_profile_comment' profile_id=profile.id %}" method="post" style="width: 100%; padding: 12px 20px; margin: 8px 0; box-sizing: border-box;">
+                    {%csrf_token%}
+                    {{commentForm.as_p}}
+                    <input type="submit">
+                </form>
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

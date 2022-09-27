@@ -20,6 +20,11 @@ body {
     font-family: Product Sans,sans-serif;
 }
 
+.title-container {
+    display: grid;
+    grid-template-columns: 25% 75%;
+}
+
 .title {
     font-family: 'Silkscreen', cursive;
     font-size: 145%;
@@ -32,14 +37,20 @@ body {
 #g-yellow{ color:#F4B400; }
 #g-green{ color:#0F9D58; }
 
-.nav-link {
-    font-family: Product Sans,sans-serif;
-}
 
 #header-search {
     font-family: Product Sans,sans-serif;
     border-radius: 11px;
     margin-top: 3px;
+}
+
+#header-font {
+    font-family: 'Chakra Petch', sans-serif;
+}
+
+.index-container {
+    min-width: 1420px;
+    max-width: 1500px;
 }
 
 .page-title {
@@ -193,6 +204,10 @@ body {
     padding: 8px;
 }
 
+.bid-box-status {
+    padding-left: 10px;
+}
+
 #item-past {
     padding-top: 3px;
     font-size: large;
@@ -298,4 +313,23 @@ body {
     list-style: none;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     font-size: xx-large;
+}
+
+.centre-cont {
+    font-family: 'Silkscreen', cursive;
+    font-size: 200%;
+    text-align: center;
+}
+
+.multicolortext {
+    background-image: linear-gradient(to left, violet, indigo, green, blue, yellow, orange, red);
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.part-li {
+    font-size: 40px;
+    list-style: none;
 }

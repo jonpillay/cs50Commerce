@@ -5,12 +5,13 @@
 {% endblock %}
 
 {% block body %}
-    <h1>{{word}} did not return any exact results. But here are some partial ones:</h1>
-
-    <ul>
+<div class="centre-cont">
+    <h1><p>{{word}} did not return any exact results.</p> But here are some partial ones:</h1>
+    <ul class="part-li">
         {% for match in matches %}
             <li><a href="{% url 'item' item_id=match.id %}">{{match.name}}</a></li>
         {% endfor %}
     </ul>
+</div>
 
 {% endblock %}

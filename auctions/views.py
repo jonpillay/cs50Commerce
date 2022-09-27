@@ -4,6 +4,7 @@ from unittest.util import _MAX_LENGTH
 from urllib import request
 from django.core import validators
 from auctions.forms import *
+import datetime
 
 from django import forms
 from django.contrib.auth import authenticate, login, logout

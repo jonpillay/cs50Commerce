@@ -5,11 +5,11 @@
 {% endblock %}
 {% block body %}
     <div id="cat_div">
-        <h1 >
-            <span class="multicolortext">
-                Sorry, {{word}} did not return any results. Here is a cat.
-            </span>
-        </h1>
-        <img src="{% static 'auctions/images/3683.jpg' %}" alt="Not a Cat">
+        <div class="centre-cont">
+            <div class="multicolortext">
+                Sorry, '{{word}}' did not return any results. Here is a cat.
+            </div>
+            <img src="{% static 'auctions/images/3683.jpg' %}" alt="Not a Cat">
+        </div>
     </div>
 {% endblock %}

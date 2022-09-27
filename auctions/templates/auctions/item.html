@@ -38,18 +38,26 @@
             <div style="position: relative;">
                 {% if user.is_authenticated %}
                     {% if request.user == item.seller and item.is_active %}
-                        <h3>No bid rigging!</h3>
+                    <div class="bid-box-status">
+                        <h3 class="bid">No bid rigging!</h3>
                         <form action="{% url 'close_item' item.id %}" method="post">
                             {%csrf_token%}
                             <button type="submit" class="watch-close-button">Close</button>
                         </form>
+                    </div>
                     {% elif now > item.auctionEnd and request.user == item.highestBid.bidder %}
+                    <div class="bid-box-status">
                         <h3>You are the winner {{item.highestBid.bidder}}</h3>
+                    </div>
                     {% elif now > item.auctionEnd and request.user != item.highestBid.bidder %}
                         {% if item.highestBid == None %}
+                        <div class="bid-box-status">
                             <h3>No Bids, No Winner!</h3>
+                        </div>
                         {% else %}
+                        <div class="bid-box-status">
                             <h4>Lot Closed: Winner {{item.highestBid.bidder}}</h4>
+                        </div>
                         {% endif %}
                     {% elif not item.seller == request.user and item.is_active %}
                         {% if errorForm %}
@@ -115,12 +123,16 @@
     </div>
     <div>
         <div style="padding-top: 30px;">
-            <h3 id="comment-prompt">Talk about {{item.name}} from Seller: {{item.seller.username}}</h3>
-            <form action="{% url 'new_item_comment' item_id=item.id %}" method="post" style="width: 100%; padding: 12px 20px; margin: 8px 0; box-sizing: border-box;">
-                {%csrf_token%}
-                {{commentForm.as_p}}
-                <input type="submit">
-            </form>
+            {% if request.user.profile == None %}
+                <h2>Please Login to Comment</h2>
+            {% else %}
+                <h3 id="comment-prompt">Talk about {{item.name}} from Seller: {{item.seller.username}}</h3>
+                <form action="{% url 'new_item_comment' item_id=item.id %}" method="post" style="width: 100%; padding: 12px 20px; margin: 8px 0; box-sizing: border-box;">
+                    {%csrf_token%}
+                    {{commentForm.as_p}}
+                    <input type="submit">
+                </form>
+            {% endif %}
         </div>
     </div>
 </div>
