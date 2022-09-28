@@ -17,15 +17,12 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from PIL import Image
+from .forms import *
 
 from .models import *
 from .models import User
 from .utils import *
 from random import *
-
-class SearchForm(forms.Form):
-    search = forms.CharField(widget=forms.TextInput(attrs={'id':'header-search'}))
-    #name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Name', 'style': 'width: 300px;'}))
 
 def index(request):
     now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
@@ -111,14 +108,6 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-class CommentForm(forms.Form):
-    comment = forms.CharField(widget=forms.Textarea)
-
-class ProfileForm(forms.Form):
-    first = forms.CharField(max_length=64, label="First Name: ")
-    lasts = forms.CharField(max_length=64, label="Last Names: ")
-    profile_pic = forms.ImageField(label="Show Us Yah Mug: ")
-    description = forms.CharField(widget=forms.Textarea, label="About Yourself")
 
 def new_comment(request, item_id=None, profile_id=None):
     if request.method == "POST":
@@ -171,10 +160,9 @@ def create_profile(request, user_id):
                 description = description
             )
             obj.save()
-            profile = Profile.objects.get(pk=user_id)
-            return render(request, "auctions/profile.html",{
-                "profile": profile
-            })
+            profile = Profile.objects.get(pk=request.user.profile.id)
+            user_id = request.user.id
+            return redirect('profile', user_id)
         else:
             raise Http404
     else:    
@@ -220,15 +208,6 @@ def profile(request, user_id):
             "commentForm": CommentForm,
             "bidForm": NewBidModel, 
         })
-
-class NewListingForm (forms.Form):
-    itemName = forms.CharField(max_length=24, label="What's that then?")
-    itemDescript = forms.CharField(widget=forms.Textarea, max_length=512, label="Tel us about it")
-    itemImage = forms.ImageField(label="Show us a photo")
-    startingBid = forms.DecimalField(decimal_places=2, label="What is your starting bid?")
-    auctionStart = forms.DateTimeField(label="Auction Start: ", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
-    auctionEnd = forms.DateTimeField(label="Auction End: ", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
-    category = forms.ModelChoiceField(label= "Catogery", queryset=Category.objects.order_by("name"), required=False)
 
 def new_listing(request):
     if request.method == "POST":
@@ -334,8 +313,6 @@ def test_form(request, item_id):
                 print("item is_active check working")
                 return HttpResponseRedirect(reverse("index"))
         else:
-            """When rerendering the page for the index, see if you can reinsert the error message relating to the item_id...
-            so it renders on the corrent form"""
             now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
             return render(request, "auctions/validator_test.html", {
             "bidForm": form,
@@ -387,7 +364,11 @@ def new_bid(request, item_id):
                         next = request.POST.get('next')
                         print("WE ARE HERE AUGUST 2022")
                         next = request.POST.get('next')
-                        return HttpResponseRedirect(request.POST.get('next'))
+                        if '/new_bid' in next:
+                            print("here we are again")
+                            return redirect('index')
+                        else:
+                            return HttpResponseRedirect(request.POST.get('next'))
                 else:
                     if bid > bidItem.highestBid.bid:
                         obj = Bid.objects.create(
@@ -400,9 +381,15 @@ def new_bid(request, item_id):
                         bidItem.highestBid = obj
                         bidItem.save(update_fields=['highestBid'])
                         next = request.POST.get('next')
-                        return HttpResponseRedirect(request.POST.get('next'))
+                        print(next)
+                        if '/new_bid' in next:
+                            print("here we are again")
+                            return redirect('index')
+                        else:
+                            return HttpResponseRedirect(request.POST.get('next'))
                     else:
                         now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
+                        #is there anyway to redirect this with the message? Should have used a messages framework.
                         return render(request, "auctions/index.html", {
                             "items": ItemListing.objects.all(),
                             "now": now,

@@ -139,10 +139,10 @@ class Bid(models.Model):
 
 class Profile(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    first = models.CharField(max_length=64)
-    lasts = models.CharField(max_length=64)
+    first = models.CharField(max_length=12)
+    lasts = models.CharField(max_length=12)
     profile_pic = models.ImageField(upload_to ='images/')
-    description = models.CharField(max_length=10000)
+    description = models.CharField(max_length=786)
     watchlist = models.ManyToManyField(ItemListing, blank=True, null=True, related_name="watching")
 
     def get_items(self):

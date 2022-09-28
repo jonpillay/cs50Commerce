@@ -4,7 +4,30 @@ from django import forms
 from django.forms import DecimalField, ModelChoiceField, ModelForm, ValidationError
 from django.core.validators import *
 from .models import *
+from decimal import Decimal
 import urllib.request
+
+class SearchForm(forms.Form):
+    search = forms.CharField(widget=forms.TextInput(attrs={'id':'header-search'}))
+    #name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Name', 'style': 'width: 300px;'}))
+
+class NewListingForm (forms.Form):
+    itemName = forms.CharField(max_length=15, label="What's that then?")
+    itemDescript = forms.CharField(widget=forms.Textarea, max_length=712, label="Tel us about it")
+    itemImage = forms.ImageField(label="Show us a photo")
+    startingBid = forms.DecimalField(decimal_places=2, min_value=0, label="What is your starting bid?")
+    auctionStart = forms.DateTimeField(label="Auction Start: ", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
+    auctionEnd = forms.DateTimeField(label="Auction End: ", widget=forms.widgets.DateTimeInput(attrs={'type':'datetime-local'}))
+    category = forms.ModelChoiceField(label= "Catogery", queryset=Category.objects.order_by("name"), required=False)
+
+class ProfileForm(forms.Form):
+    first = forms.CharField(max_length=12, label="First Name: ")
+    lasts = forms.CharField(max_length=12, label="Last Names: ")
+    profile_pic = forms.ImageField(label="Show Us Yah Mug: ")
+    description = forms.CharField(widget=forms.Textarea, max_length=786, label="About Yourself")
+
+class CommentForm(forms.Form):
+    comment = forms.CharField(widget=forms.Textarea)
 
 class NewListingModel(ModelForm):
     class Meta:
@@ -13,7 +36,6 @@ class NewListingModel(ModelForm):
 
 class NewBidModel(ModelForm):
     bid = DecimalField(
-        min_value=0,
         decimal_places=2,
     )
     class Meta:
