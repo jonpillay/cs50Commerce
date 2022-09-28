@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch&family=Silkscreen:wght@700&family=Special+Elite&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Source+Sans+Pro:wght@300&family=Teko:wght@600&display=swap');
+
 
 /* special-elite-regular - latin */
 @font-face {
@@ -16,13 +18,14 @@
 
 
 body {
+    min-width: 1500px;
     padding: 10px;
     font-family: Product Sans,sans-serif;
 }
 
 .title-container {
     display: grid;
-    grid-template-columns: 25% 75%;
+    grid-template-columns: 23% 77%;
 }
 
 .title {
@@ -37,6 +40,56 @@ body {
 #g-yellow{ color:#F4B400; }
 #g-green{ color:#0F9D58; }
 
+.deets {
+    max-width: 1000px;
+    padding-top:20px;
+    padding-left: 20px;
+    font-family: 'Oswald', sans-serif;
+    display: grid;
+    grid-template-columns: 36% 34% 25%;
+    background-color: #e8e8e8;
+    border-radius: 5px;
+    opacity: 95%;
+}
+
+.name {
+    font-size: 57px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    margin-top: -19px;
+    padding-right: 5px;
+}
+
+.info-rows {
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    display: grid;
+    grid-template-rows: 50% 50%;
+    height: 47px;
+    margin-left: -80px;
+    margin-bottom: 5px;
+    min-width: 500px;
+}
+
+.info-col {
+    display: grid;
+    grid-template-columns: 40% 60%;
+}
+
+#pdf-icon {
+    height: 22px;
+    margin-left: 4px;
+    margin-right: 6px;
+}
+
+#lnkin-icon {
+    height: 23px;
+    margin-left: 6px;
+    margin-top: 3px;
+}
+
+.header-icon {
+    height: 30px;
+}
 
 #header-search {
     font-family: Product Sans,sans-serif;

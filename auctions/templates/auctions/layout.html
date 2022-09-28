@@ -9,8 +9,26 @@
         <script src="{% static 'auctions/auctions.js' %}"></script>  
     </head>
     <body>
-        <h1><strong><span class ='title'><span id="g-blue">F</span><span id="g-red">r</span><span id="g-yellow">o</span><span id="g-green">o</span><span id="g-blue">g</span><span id="g-red">l</span><span id="g-yellow">e</span></strong></h1>
-        <div class="tagline">{{tagline}}</div>
+        <div class="title-container">
+            <div style="position: relative; margin-right: 10px;">
+                <h1><strong><span class='title'><span id="g-blue">F</span><span id="g-red">r</span><span id="g-yellow">o</span><span id="g-green">o</span><span id="g-blue">g</span><span id="g-red">l</span><span id="g-yellow">e</span></strong></h1>
+                <div class="tagline">{{tagline}}</div>
+            </div>
+            <div class="deets">
+                <h1>Portfolio site for &#10145;&#65039;</h1>
+                <div class="name">Jon Pillay</div>
+                <div class="info-rows">
+                    <div class="info-col">
+                        <div><a href="mailto:jon.pillay@gmail.com">&#128231; jon.pillay@gmail.com</a></div>
+                        <a href="https://github.com/jonpillay" target="_blank" rel="noopener noreferrer"><img class="header-icon" src="/static/auctions/images/GitHub_Logo.png" alt="Nope"></a>
+                    </div>
+                    <div class="info-col">
+                        <div><a href="/public/Pillay_J_CV.pdf" download><img class="header-icon" id="pdf-icon" src="/static/auctions/images/PDF_file_.png">Resume</a></div>
+                        <a href="https://www.linkedin.com/in/jonpillay/" target="_blank" rel="noopener noreferrer"><img class="header-icon" id="lnkin-icon" src="/static/auctions/images/LI-In-Bug.png" alt="missing"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="header-font">
             <div>
                 {% if user.is_authenticated %}
