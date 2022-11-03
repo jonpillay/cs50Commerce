@@ -23,6 +23,9 @@ from dotenv import load_dotenv
 
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
+from django.core.files.storage import default_storage
+from storages.backends.s3boto3 import S3Boto3Storage
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -36,6 +39,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = ['frooglelb-1233891907.eu-west-2.elb.amazonaws.com']
+
 
 # Application definition
 
@@ -47,10 +52,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages'
 ]
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 #SESSION_COOKIE_SECURE = False
@@ -102,10 +108,34 @@ DATABASES = {
         'NAME': os.getenv('DATABASE_NAME'),
         'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': 'db',
+        'HOST': os.getenv('DATABASE_ENDPOINT'),
         'PORT': 5432,
     }
 }
+
+#STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
+AWS_ACCESS_KEY_ID=os.getenv('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY=os.getenv('AWS_SECRET_KEY')
+AWS_REGION_NAME=os.getenv('AWS_S3_REGION_NAME')
+AWS_STORAGE_BUCKET_NAME=os.getenv('AWS_STORAGE_BUCKET')
+
+AWS_S3_FILE_OVERWRITE=False
+AWS_DEFAULT_ACL='public-read'
+AWS_S3_OBJECT_PARAMETERS={
+    'CacheControl': 'max-age=86400'
+}
+AWS_HEADERS={
+    'Access-Control-Allow-Origin': '*',
+}
+
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_REGION_NAME}.amazonaws.com'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_LOCATION = 'static'
+
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+
 
 AUTH_USER_MODEL = 'auctions.User'
 
@@ -145,7 +175,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+#STATIC_URL = '/static/'
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
-MEDIA_URL = 'media/'
+#MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
+#MEDIA_URL = 'media/'

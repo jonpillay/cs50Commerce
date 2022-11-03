@@ -5,8 +5,8 @@
     <head>
         <title>{% block title %}Auctions{% endblock %}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-        <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
-        <script src="{% static 'auctions/auctions.js' %}"></script>  
+        <link href="{% static 'auctions/CSS/styles.css' %}" rel="stylesheet">
+        <script src="{% static 'auctions/JS/auctions.js' %}"></script>  
     </head>
     <body>
         <div class="title-container">
@@ -19,12 +19,26 @@
                 <div class="name">Jon Pillay</div>
                 <div class="info-rows">
                     <div class="info-col">
-                        <div><a href="mailto:jon.pillay@gmail.com">&#128231; jon.pillay@gmail.com</a></div>
-                        <a href="https://github.com/jonpillay" target="_blank" rel="noopener noreferrer"><img class="header-icon" src="/static/auctions/images/GitHub_Logo.png" alt="Nope"></a>
+                        <div>
+                            <a href="mailto:jon.pillay@gmail.com">&#128231; email</a>
+                        </div>
+                        <div style="margin-top: -2px;">
+                            <a href="https://jonpillay.github.io/portfolio/" target="_blank" rel="noopener noreferrer">&#9997; <div style="margin-top: -23px; margin-left: 29px;"> Portfolio</div></a>
+                        </div>
+                        <div>
+                            <a href="https://www.linkedin.com/in/jonpillay/" target="_blank" rel="noopener noreferrer"><img class="header-icon" id="lnkin-icon"  src="{% static 'auctions/images/LI-In-Bug.png' %}" alt="missing"></a>
+                        </div>
                     </div>
                     <div class="info-col">
-                        <div><a href="/public/Pillay_J_CV.pdf" download><img class="header-icon" id="pdf-icon" src="/static/auctions/images/PDF_file_.png">Resume</a></div>
-                        <a href="https://www.linkedin.com/in/jonpillay/" target="_blank" rel="noopener noreferrer"><img class="header-icon" id="lnkin-icon" src="/static/auctions/images/LI-In-Bug.png" alt="missing"></a>
+                        <div>
+                            <a href="{% static 'auctions/downloads/Pillay_J_CV.pdf' %}" target="_blank" rel="noopener noreferrer"><img class="header-icon" id="pdf-icon" src="{% static 'auctions/images/PDF_file_.png' %}">CV</a>
+                        </div>
+                        <div>
+                            <a href="https://github.com/jonpillay" target="_blank" rel="noopener noreferrer"><img class="header-icon" id="github-icon" src="{% static 'auctions/images/GitHub_Logo.png' %}" alt="Nope"></a>
+                        </div>
+                        <div>
+                            <a href="https://www.instagram.com/jonpillay/" target="_blank" rel="noopener noreferrer"><img class="header-icon" id="insta-icon" src="{% static 'auctions/images/insta_logo.png' %}" alt="Nope"></a>
+                        </div>
                     </div>
                 </div>
             </div>
