@@ -24,6 +24,8 @@ from .models import User
 from .utils import *
 from random import *
 
+#git push test
+
 def index(request):
     now = pytz.utc.localize(datetime.datetime.utcnow().replace(microsecond=0))
     form = NewBidModel
